@@ -1,0 +1,6 @@
+@mapa_conocimiento_api_HostAddress = http://localhost:5254
+
+GET {{mapa_conocimiento_api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
