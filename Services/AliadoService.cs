@@ -31,28 +31,38 @@ namespace mapa_conocimiento_api.Servicios
             // CRÍTICO: Asignamos el nit porque la llave primaria no es autoincremental
             var nuevaEntidad = new aliado
             {
-                nit = peticion.nit,
-                nombre = peticion.nombre
+                nit = peticion.nit, // Asegúrate de que tu petición tenga el NIT
+                razon_social = peticion.razon_social,
+                nombre_contacto = peticion.nombre_contacto,
+                correo = peticion.correo,
+                telefono = peticion.telefono,
+                ciudad = peticion.ciudad,
+                activo = true // Por defecto activo al crear
             };
 
             await _repositorio.CrearAsync(nuevaEntidad);
             return nuevaEntidad;
         }
 
-        public async Task<bool> ActualizarAsync(int nit, AliadoEditar peticion)
+            // 1. Agregamos <bool> aquí
+        public async Task<bool> ActualizarAsync(int nit, AliadoEditar peticion) 
         {
-            // Verificamos si existe antes de intentar actualizar
-            var entidadExistente = await _repositorio.ObtenerPorIdAsync(nit);
-            if (entidadExistente == null) 
+            var entidad = await _repositorio.ObtenerPorIdAsync(nit); 
+    
+            if (entidad == null)
             {
-                return false; 
+                return false; // 2. Retornamos falso si no existe
             }
 
-            // Aplicamos el reemplazo de los datos editables
-            entidadExistente.nombre = peticion.nombre;
+            entidad.razon_social = peticion.razon_social;
+            entidad.nombre_contacto = peticion.nombre_contacto;
+            entidad.correo = peticion.correo;
+            entidad.telefono = peticion.telefono;
+            entidad.ciudad = peticion.ciudad;
 
-            await _repositorio.ActualizarAsync(entidadExistente);
-            return true;
+            await _repositorio.ActualizarAsync(entidad);
+    
+            return true; // 3. Retornamos verdadero indicando éxito al final
         }
 
         public async Task<bool> EliminarAsync(int nit)
