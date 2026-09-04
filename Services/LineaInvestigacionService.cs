@@ -28,10 +28,12 @@ namespace mapa_conocimiento_api.Servicios
         public async Task<linea_investigacion> CrearAsync(LineaInvestigacionCrear peticion)
         {
             // Mapeo manual del DTO de entrada hacia la entidad
-            var nuevaEntidad = new linea_investigacion
-            {
-                nombre = peticion.nombre
-            };
+        var nuevaEntidad = new linea_investigacion
+        {
+            nombre = peticion.nombre,
+            descripcion = peticion.descripcion, // <--- Verifica que esta línea exista
+            activo = true
+        };
 
             await _repositorio.CrearAsync(nuevaEntidad);
             return nuevaEntidad;
