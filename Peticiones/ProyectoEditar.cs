@@ -1,12 +1,18 @@
+using System;
 using System.ComponentModel.DataAnnotations;
 
 namespace mapa_conocimiento_api.Peticiones
 {
-    // DTO para validar los datos de entrada al actualizar por completo (PUT) un proyecto
     public class ProyectoEditar
     {
-        [Required(ErrorMessage = "El campo nombre es obligatorio para el reemplazo completo.")]
-        [StringLength(250, ErrorMessage = "El campo nombre no puede exceder los 250 caracteres.")]
-        public string nombre { get; set; } = string.Empty;
+        [Required(ErrorMessage = "El campo titulo es obligatorio.")]
+        public string titulo { get; set; } = string.Empty;
+        
+        public string? resumen { get; set; }
+        public double? presupuesto { get; set; }
+        public string? tipo_financiacion { get; set; }
+        public string? tipo_fondos { get; set; }
+        public DateTime? fecha_inicio { get; set; }
+        public DateTime? fecha_fin { get; set; }
     }
 }
