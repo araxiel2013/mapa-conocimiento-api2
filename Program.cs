@@ -44,6 +44,14 @@ builder.Services.AddScoped<ILineaInvestigacionService, LineaInvestigacionService
 builder.Services.AddScoped<IAliadoRepository, AliadoRepository>();
 builder.Services.AddScoped<IAliadoService, AliadoService>();
 
+// 7. Proyecto
+builder.Services.AddScoped<IProyectoRepository, ProyectoRepository>();
+builder.Services.AddScoped<IProyectoService, ProyectoService>();
+
+// 8. Tipo de Producto
+builder.Services.AddScoped<ITipoProductoRepository, TipoProductoRepository>();
+builder.Services.AddScoped<ITipoProductoService, TipoProductoService>();
+
 // ====================================================================
 builder.Services.AddCors(options =>
 {
