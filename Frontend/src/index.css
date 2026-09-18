@@ -1,0 +1,23 @@
+@import "tailwindcss";
+
+@theme {
+  --color-naranja: #Eb8600;
+  --color-blanco: #FFFFFF;
+  --color-gris-1: #F0F0F0;
+  --color-gris-2: #6F6F6F;
+  --color-azul-1: #00E5FF;
+  --color-azul-2: #0D274C;
+}
+
+:root {
+  --font-titulos: 'Helvetica Neue', sans-serif;
+  --font-botones: 'Noto Sans', sans-serif;
+  --font-datos: 'Myriad Hebrew', sans-serif;
+}
+
+body {
+  background-color: var(--color-gris-2);
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-titulos);
+}

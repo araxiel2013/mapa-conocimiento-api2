@@ -1,0 +1,23 @@
+.layout-contenedor {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden; 
+}
+
+.recuadro-funcional {
+  background-color: var(--color-gris-1);
+  border-radius: 28px; 
+  display: flex;
+  width: 1370px; 
+  height: 758px; 
+  margin-top: 20px;
+}
+
+.contenido-scroll {
+  flex: 1;
+  overflow-y: auto; 
+  padding: 40px;
+}
