@@ -22,13 +22,8 @@ namespace mapa_conocimiento_api.Servicios
         public async Task<proyecto> CrearAsync(ProyectoCrear peticion)
         {
             var nuevaEntidad = new proyecto { 
-                titulo = peticion.titulo,
-                resumen = peticion.resumen,
-                presupuesto = peticion.presupuesto,
-                tipo_financiacion = peticion.tipo_financiacion,
-                tipo_fondos = peticion.tipo_fondos,
-                fecha_inicio = peticion.fecha_inicio,
-                fecha_fin = peticion.fecha_fin
+                nombre = peticion.titulo,
+                activo = true
             };
             await _repositorio.CrearAsync(nuevaEntidad);
             return nuevaEntidad;
@@ -39,13 +34,7 @@ namespace mapa_conocimiento_api.Servicios
             var entidadExistente = await _repositorio.ObtenerPorIdAsync(id);
             if (entidadExistente == null) return false;
             
-            entidadExistente.titulo = peticion.titulo;
-            entidadExistente.resumen = peticion.resumen;
-            entidadExistente.presupuesto = peticion.presupuesto;
-            entidadExistente.tipo_financiacion = peticion.tipo_financiacion;
-            entidadExistente.tipo_fondos = peticion.tipo_fondos;
-            entidadExistente.fecha_inicio = peticion.fecha_inicio;
-            entidadExistente.fecha_fin = peticion.fecha_fin;
+            entidadExistente.nombre = peticion.titulo;
 
             await _repositorio.ActualizarAsync(entidadExistente);
             return true;

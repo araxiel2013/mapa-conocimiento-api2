@@ -1,0 +1,28 @@
+.input-grupo {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 25px;
+}
+
+.input-pregunta {
+  font-family: var(--font-titulos); /* Helvetica Neue */
+  font-size: 25px;
+  font-weight: bold;
+  color: var(--color-gris-2);
+  margin-bottom: 10px;
+}
+
+.input-campo {
+  background-color: var(--color-blanco);
+  border: 2px solid var(--color-gris-2);
+  border-radius: 0px; /* Vértices ortogonales exigidos por el manual */
+  padding: 15px;
+  font-family: var(--font-datos); /* Myriad Hebrew */
+  font-size: 20px;
+  color: var(--color-azul-2); /* Color al ingresar nuevos datos */
+  outline: none;
+}
+
+.input-campo:focus {
+  border-color: var(--color-naranja); /* Detalle extra de usabilidad */
+}
