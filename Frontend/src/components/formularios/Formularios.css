@@ -1,0 +1,44 @@
+.formulario-seccion {
+  display: flex;
+  flex-direction: column;
+  max-width: 800px;
+}
+
+.titulo-seccion {
+  font-family: var(--font-titulos);
+  font-size: 28px; /* Subtítulos 1 */
+  font-weight: bold;
+  color: var(--color-blanco);
+  margin-bottom: 30px;
+}
+
+.boton-funcional {
+  background-color: var(--color-naranja);
+  color: var(--color-blanco);
+  font-family: var(--font-botones); /* Noto Sans */
+  font-size: 20px;
+  font-weight: 600; /* SemiBold */
+  border: none;
+  border-radius: 20px; /* Acorde a las imágenes de referencia */
+  padding: 10px 30px;
+  cursor: pointer;
+  align-self: flex-end;
+  margin-top: 20px;
+}
+
+.boton-menu {
+  background: transparent;
+  border: none;
+  color: var(--color-blanco);
+  font-family: var(--font-botones);
+  font-size: 16px;
+  text-align: left;
+  cursor: pointer;
+  padding: 10px;
+  border-radius: 8px;
+  transition: background 0.3s;
+}
+
+.boton-menu:hover {
+  background: rgba(255,255,255,0.1);
+}
