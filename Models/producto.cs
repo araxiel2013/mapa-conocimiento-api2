@@ -1,3 +1,4 @@
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -10,6 +11,8 @@ namespace mapa_conocimiento_api.Models
         
         public required string nombre { get; set; }
         public required string categoria { get; set; }
+
+        [Column(TypeName = "date")]
         public DateTime fecha_entrega { get; set; }
         
         // Llaves foráneas físicas
@@ -19,7 +22,7 @@ namespace mapa_conocimiento_api.Models
         [Column("tipo_producto")]
         public int tipo_producto_id { get; set; }
         
-        public bool activo { get; set; }
+        public bool activo { get; set; } = true;
 
         // Propiedades de Navegación Virtual
         [ForeignKey("proyecto_id")]

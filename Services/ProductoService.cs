@@ -72,13 +72,16 @@ namespace mapa_conocimiento_api.Servicios
                     throw new ArgumentException("El proyecto seleccionado no existe o está inactivo.");
             }
 
+            var fechaEntregaUtc = DateTime.SpecifyKind(peticion.fecha_entrega.Date, DateTimeKind.Utc);
+
             var nuevaEntidad = new producto
             {
                 nombre = peticion.nombre,
                 categoria = peticion.categoria,
-                fecha_entrega = peticion.fecha_entrega,
+                fecha_entrega = fechaEntregaUtc,
                 proyecto_id = peticion.proyecto_id,
-                tipo_producto_id = peticion.tipo_producto_id
+                tipo_producto_id = peticion.tipo_producto_id,
+                activo = true
             };
 
             await _repositorio.CrearAsync(nuevaEntidad);
@@ -112,7 +115,7 @@ namespace mapa_conocimiento_api.Servicios
 
             entidadExistente.nombre = peticion.nombre;
             entidadExistente.categoria = peticion.categoria;
-            entidadExistente.fecha_entrega = peticion.fecha_entrega;
+            entidadExistente.fecha_entrega = DateTime.SpecifyKind(peticion.fecha_entrega.Date, DateTimeKind.Utc);
             entidadExistente.proyecto_id = peticion.proyecto_id;
             entidadExistente.tipo_producto_id = peticion.tipo_producto_id;
 
