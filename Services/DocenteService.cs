@@ -1,3 +1,7 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using mapa_conocimiento_api.Models;
 using mapa_conocimiento_api.Peticiones;
 using mapa_conocimiento_api.Repositorios;
@@ -7,7 +11,6 @@ namespace mapa_conocimiento_api.Servicios
     public class DocenteService : IDocenteService
     {
         private readonly IDocenteRepository _repositorio;
-        // Inyectamos el repo de Fase 1 para validar la Llave Foránea
         private readonly ILineaInvestigacionRepository _lineaInvestigacionRepository;
 
         public DocenteService(IDocenteRepository repositorio, ILineaInvestigacionRepository lineaInvestigacionRepository)
@@ -16,7 +19,6 @@ namespace mapa_conocimiento_api.Servicios
             _lineaInvestigacionRepository = lineaInvestigacionRepository;
         }
 
-        // Método auxiliar privado para aplanar la entidad hacia el DTO de respuesta
         private DocenteResponse MapearAResponse(docente entidad)
         {
             return new DocenteResponse
@@ -26,7 +28,16 @@ namespace mapa_conocimiento_api.Servicios
                 apellidos = entidad.apellidos,
                 genero = entidad.genero,
                 cargo = entidad.cargo,
+                fecha_nacimiento = entidad.fecha_nacimiento,
                 correo = entidad.correo,
+                telefono = entidad.telefono,
+                url_cvlac = entidad.url_cvlac,
+                fecha_actualizacion = entidad.fecha_actualizacion,
+                escalafon = entidad.escalafon,
+                perfil = entidad.perfil,
+                cat_minciencia = entidad.cat_minciencia,
+                conv_minciencia = entidad.conv_minciencia,
+                nacionalidad = entidad.nacionalidad,
                 activo = entidad.activo,
                 linea_investigacion = entidad.LineaInvestigacionRelacionada != null 
                     ? new ItemRelacionadoResponse 
@@ -52,6 +63,11 @@ namespace mapa_conocimiento_api.Servicios
 
         public async Task<DocenteResponse> CrearAsync(DocenteCrear peticion)
         {
+            // Validar cédula no duplicada
+            var docenteExistente = await _repositorio.ObtenerPorIdAsync(peticion.cedula);
+            if (docenteExistente != null)
+                throw new ArgumentException($"Ya existe un docente registrado con la cédula {peticion.cedula}.");
+
             // VALIDACIÓN FASE 2: ¿La llave foránea existe y está activa?
             if (peticion.linea_investigacion_principal.HasValue)
             {
@@ -60,6 +76,10 @@ namespace mapa_conocimiento_api.Servicios
                     throw new ArgumentException("La línea de investigación seleccionada no existe o está inactiva.");
             }
 
+            var nac = !string.IsNullOrWhiteSpace(peticion.nacionalidad) 
+                ? peticion.nacionalidad 
+                : (!string.IsNullOrWhiteSpace(peticion.nacionalidaad) ? peticion.nacionalidaad : "Colombiana");
+
             var nuevaEntidad = new docente
             {
                 cedula = peticion.cedula,
@@ -67,13 +87,24 @@ namespace mapa_conocimiento_api.Servicios
                 apellidos = peticion.apellidos,
                 genero = peticion.genero,
                 cargo = peticion.cargo,
+                fecha_nacimiento = DateTime.SpecifyKind(peticion.fecha_nacimiento.Date, DateTimeKind.Utc),
                 correo = peticion.correo,
-                linea_investigacion_principal = peticion.linea_investigacion_principal
+                telefono = peticion.telefono,
+                url_cvlac = peticion.url_cvlac,
+                fecha_actualizacion = peticion.fecha_actualizacion.HasValue
+                    ? DateTime.SpecifyKind(peticion.fecha_actualizacion.Value.Date, DateTimeKind.Utc)
+                    : DateTime.UtcNow.Date,
+                escalafon = peticion.escalafon,
+                perfil = peticion.perfil,
+                cat_minciencia = peticion.cat_minciencia,
+                conv_minciencia = peticion.conv_minciencia,
+                nacionalidad = nac,
+                linea_investigacion_principal = peticion.linea_investigacion_principal,
+                activo = true
             };
 
             await _repositorio.CrearAsync(nuevaEntidad);
 
-            // Consultamos de nuevo para que EF Core nos traiga la propiedad de navegación llena
             var entidadCreada = await _repositorio.ObtenerPorIdAsync(nuevaEntidad.cedula);
             return MapearAResponse(entidadCreada!);
         }
@@ -83,7 +114,6 @@ namespace mapa_conocimiento_api.Servicios
             var entidadExistente = await _repositorio.ObtenerPorIdAsync(cedula);
             if (entidadExistente == null) return false;
 
-            // VALIDACIÓN FASE 2: Validamos si cambiaron la llave foránea a una nueva
             if (peticion.linea_investigacion_principal.HasValue && 
                 peticion.linea_investigacion_principal != entidadExistente.linea_investigacion_principal)
             {
@@ -92,11 +122,26 @@ namespace mapa_conocimiento_api.Servicios
                     throw new ArgumentException("La línea de investigación seleccionada no existe o está inactiva.");
             }
 
+            var nac = !string.IsNullOrWhiteSpace(peticion.nacionalidad) 
+                ? peticion.nacionalidad 
+                : (!string.IsNullOrWhiteSpace(peticion.nacionalidaad) ? peticion.nacionalidaad : entidadExistente.nacionalidad);
+
             entidadExistente.nombres = peticion.nombres;
             entidadExistente.apellidos = peticion.apellidos;
             entidadExistente.genero = peticion.genero;
             entidadExistente.cargo = peticion.cargo;
+            entidadExistente.fecha_nacimiento = DateTime.SpecifyKind(peticion.fecha_nacimiento.Date, DateTimeKind.Utc);
             entidadExistente.correo = peticion.correo;
+            entidadExistente.telefono = peticion.telefono;
+            entidadExistente.url_cvlac = peticion.url_cvlac;
+            entidadExistente.fecha_actualizacion = peticion.fecha_actualizacion.HasValue
+                ? DateTime.SpecifyKind(peticion.fecha_actualizacion.Value.Date, DateTimeKind.Utc)
+                : DateTime.UtcNow.Date;
+            entidadExistente.escalafon = peticion.escalafon;
+            entidadExistente.perfil = peticion.perfil;
+            entidadExistente.cat_minciencia = peticion.cat_minciencia;
+            entidadExistente.conv_minciencia = peticion.conv_minciencia;
+            entidadExistente.nacionalidad = nac;
             entidadExistente.linea_investigacion_principal = peticion.linea_investigacion_principal;
 
             await _repositorio.ActualizarAsync(entidadExistente);
