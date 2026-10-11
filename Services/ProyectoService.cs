@@ -1,8 +1,9 @@
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using mapa_conocimiento_api.Models;
 using mapa_conocimiento_api.Peticiones;
 using mapa_conocimiento_api.Repositorios;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace mapa_conocimiento_api.Servicios
 {
@@ -21,15 +22,34 @@ namespace mapa_conocimiento_api.Servicios
 
         public async Task<proyecto> CrearAsync(ProyectoCrear peticion)
         {
-            var nuevaEntidad = new proyecto { 
+            if (!peticion.fecha_inicio.HasValue)
+                throw new ArgumentException("La fecha de inicio es obligatoria.");
+
+            if (!peticion.presupuesto.HasValue)
+                throw new ArgumentException("El presupuesto es obligatorio.");
+
+            var fechaInicioUtc = DateTime.SpecifyKind(peticion.fecha_inicio.Value.Date, DateTimeKind.Utc);
+            DateTime? fechaFinUtc = peticion.fecha_fin.HasValue
+                ? DateTime.SpecifyKind(peticion.fecha_fin.Value.Date, DateTimeKind.Utc)
+                : null;
+
+            if (fechaFinUtc.HasValue && fechaFinUtc.Value < fechaInicioUtc)
+            {
+                throw new ArgumentException("La fecha de finalización no puede ser anterior a la fecha de inicio.");
+            }
+
+            var nuevaEntidad = new proyecto
+            { 
                 titulo = peticion.titulo,
                 resumen = peticion.resumen,
-                presupuesto = peticion.presupuesto,
+                presupuesto = peticion.presupuesto.Value,
                 tipo_financiacion = peticion.tipo_financiacion,
                 tipo_fondos = peticion.tipo_fondos,
-                fecha_inicio = peticion.fecha_inicio,
-                fecha_fin = peticion.fecha_fin
+                fecha_inicio = fechaInicioUtc,
+                fecha_fin = fechaFinUtc,
+                activo = true
             };
+
             await _repositorio.CrearAsync(nuevaEntidad);
             return nuevaEntidad;
         }
@@ -38,14 +58,30 @@ namespace mapa_conocimiento_api.Servicios
         {
             var entidadExistente = await _repositorio.ObtenerPorIdAsync(id);
             if (entidadExistente == null) return false;
-            
+
+            if (!peticion.fecha_inicio.HasValue)
+                throw new ArgumentException("La fecha de inicio es obligatoria.");
+
+            if (!peticion.presupuesto.HasValue)
+                throw new ArgumentException("El presupuesto es obligatorio.");
+
+            var fechaInicioUtc = DateTime.SpecifyKind(peticion.fecha_inicio.Value.Date, DateTimeKind.Utc);
+            DateTime? fechaFinUtc = peticion.fecha_fin.HasValue
+                ? DateTime.SpecifyKind(peticion.fecha_fin.Value.Date, DateTimeKind.Utc)
+                : null;
+
+            if (fechaFinUtc.HasValue && fechaFinUtc.Value < fechaInicioUtc)
+            {
+                throw new ArgumentException("La fecha de finalización no puede ser anterior a la fecha de inicio.");
+            }
+
             entidadExistente.titulo = peticion.titulo;
             entidadExistente.resumen = peticion.resumen;
-            entidadExistente.presupuesto = peticion.presupuesto;
+            entidadExistente.presupuesto = peticion.presupuesto.Value;
             entidadExistente.tipo_financiacion = peticion.tipo_financiacion;
             entidadExistente.tipo_fondos = peticion.tipo_fondos;
-            entidadExistente.fecha_inicio = peticion.fecha_inicio;
-            entidadExistente.fecha_fin = peticion.fecha_fin;
+            entidadExistente.fecha_inicio = fechaInicioUtc;
+            entidadExistente.fecha_fin = fechaFinUtc;
 
             await _repositorio.ActualizarAsync(entidadExistente);
             return true;
