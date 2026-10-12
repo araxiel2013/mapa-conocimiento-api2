@@ -39,9 +39,16 @@ namespace mapa_conocimiento_api.Controllers
         [HttpPost]
         public async Task<IActionResult> Crear([FromBody] TerminoClaveCrear peticion)
         {
-            var nuevaEntidad = await _servicio.CrearAsync(peticion);
-            // Redirigimos a ObtenerPorId usando el string recién creado
-            return CreatedAtAction(nameof(ObtenerPorId), new { termino = nuevaEntidad.termino }, nuevaEntidad);
+            try
+            {
+                var nuevaEntidad = await _servicio.CrearAsync(peticion);
+                // Redirigimos a ObtenerPorId usando el string recién creado
+                return CreatedAtAction(nameof(ObtenerPorId), new { termino = nuevaEntidad.termino }, nuevaEntidad);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new { estado = 400, mensaje = ex.Message });
+            }
         }
 
         // DELETE: api/TerminoClave/inteligencia-artificial

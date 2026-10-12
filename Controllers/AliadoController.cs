@@ -39,21 +39,35 @@ namespace mapa_conocimiento_api.Controllers
         [HttpPost]
         public async Task<IActionResult> Crear([FromBody] AliadoCrear peticion)
         {
-            var nuevaEntidad = await _servicio.CrearAsync(peticion);
-            // Retornamos la URL apuntando al parámetro 'nit'
-            return CreatedAtAction(nameof(ObtenerPorId), new { nit = nuevaEntidad.nit }, nuevaEntidad);
+            try
+            {
+                var nuevaEntidad = await _servicio.CrearAsync(peticion);
+                // Retornamos la URL apuntando al parámetro 'nit'
+                return CreatedAtAction(nameof(ObtenerPorId), new { nit = nuevaEntidad.nit }, nuevaEntidad);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new { estado = 400, mensaje = ex.Message });
+            }
         }
 
         // PUT: api/Aliado/900123456
         [HttpPut("{nit}")]
         public async Task<IActionResult> Actualizar(int nit, [FromBody] AliadoEditar peticion)
         {
-            var fueActualizado = await _servicio.ActualizarAsync(nit, peticion);
-            if (!fueActualizado) 
+            try
             {
-                return NotFound(new { mensaje = "El aliado no fue encontrado para actualizar." });
+                var fueActualizado = await _servicio.ActualizarAsync(nit, peticion);
+                if (!fueActualizado) 
+                {
+                    return NotFound(new { mensaje = "El aliado no fue encontrado para actualizar." });
+                }
+                return Ok(new { mensaje = "Aliado actualizado correctamente." });
             }
-            return Ok(new { mensaje = "Aliado actualizado correctamente." });
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new { estado = 400, mensaje = ex.Message });
+            }
         }
 
         // DELETE: api/Aliado/900123456
