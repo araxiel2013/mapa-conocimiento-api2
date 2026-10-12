@@ -1,3 +1,5 @@
+using System;
+using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using mapa_conocimiento_api.Models;
 
@@ -20,6 +22,22 @@ namespace mapa_conocimiento_api.Repositorios
 
         public async Task CrearAsync(desarrolla entidad)
         {
+            var existente = await _context.desarrolla
+                .IgnoreQueryFilters()
+                .FirstOrDefaultAsync(d => d.docente == entidad.docente && d.proyecto == entidad.proyecto);
+
+            if (existente != null)
+            {
+                if (existente.activo)
+                    throw new ArgumentException("El docente ya se encuentra asignado a este proyecto.");
+
+                existente.rol = entidad.rol;
+                existente.descripcion = entidad.descripcion;
+                existente.activo = true;
+                await _context.SaveChangesAsync();
+                return;
+            }
+
             entidad.activo = true;
             await _context.desarrolla.AddAsync(entidad);
             await _context.SaveChangesAsync();

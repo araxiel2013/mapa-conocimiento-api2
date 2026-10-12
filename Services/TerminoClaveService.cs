@@ -26,10 +26,15 @@ namespace mapa_conocimiento_api.Servicios
 
         public async Task<termino_clave> CrearAsync(TerminoClaveCrear peticion)
         {
+            if (string.IsNullOrWhiteSpace(peticion.termino))
+            {
+                throw new ArgumentException("El campo termino es obligatorio y no puede contener únicamente espacios.");
+            }
+
             // El campo recibido en el DTO se convierte en la llave primaria de la entidad
             var nuevaEntidad = new termino_clave
             {
-                termino = peticion.termino
+                termino = peticion.termino.Trim()
             };
 
             await _repositorio.CrearAsync(nuevaEntidad);
