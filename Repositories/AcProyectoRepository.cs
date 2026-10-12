@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using mapa_conocimiento_api.Models;
@@ -14,6 +15,20 @@ namespace mapa_conocimiento_api.Repositorios
 
         public async Task CrearAsync(ac_proyecto entidad)
         {
+            var existente = await _context.ac_proyecto
+                .IgnoreQueryFilters()
+                .FirstOrDefaultAsync(a => a.proyecto == entidad.proyecto && a.area_conocimiento == entidad.area_conocimiento);
+
+            if (existente != null)
+            {
+                if (existente.activo)
+                    throw new ArgumentException("El área de conocimiento ya se encuentra asignada a este proyecto.");
+
+                existente.activo = true;
+                await _context.SaveChangesAsync();
+                return;
+            }
+
             entidad.activo = true;
             await _context.ac_proyecto.AddAsync(entidad);
             await _context.SaveChangesAsync();

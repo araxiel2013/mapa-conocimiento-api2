@@ -1,3 +1,4 @@
+using System;
 using Microsoft.AspNetCore.Mvc;
 using mapa_conocimiento_api.Peticiones;
 using mapa_conocimiento_api.Servicios;
@@ -30,15 +31,29 @@ namespace mapa_conocimiento_api.Controllers
         [HttpPost]
         public async Task<IActionResult> Crear([FromBody] ProyectoCrear peticion)
         {
-            var nuevaEntidad = await _servicio.CrearAsync(peticion);
-            return CreatedAtAction(nameof(ObtenerPorId), new { id = nuevaEntidad.id }, nuevaEntidad);
+            try
+            {
+                var nuevaEntidad = await _servicio.CrearAsync(peticion);
+                return CreatedAtAction(nameof(ObtenerPorId), new { id = nuevaEntidad.id }, nuevaEntidad);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new { estado = 400, mensaje = ex.Message });
+            }
         }
 
         [HttpPut("{id}")]
         public async Task<IActionResult> Actualizar(int id, [FromBody] ProyectoEditar peticion)
         {
-            if (!await _servicio.ActualizarAsync(id, peticion)) return NotFound(new { mensaje = "El proyecto no fue encontrado." });
-            return Ok(new { mensaje = "Proyecto actualizado correctamente." });
+            try
+            {
+                if (!await _servicio.ActualizarAsync(id, peticion)) return NotFound(new { mensaje = "El proyecto no fue encontrado." });
+                return Ok(new { mensaje = "Proyecto actualizado correctamente." });
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new { estado = 400, mensaje = ex.Message });
+            }
         }
 
         [HttpDelete("{id}")]
@@ -49,4 +64,3 @@ namespace mapa_conocimiento_api.Controllers
         }
     }
 }
-

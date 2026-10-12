@@ -1,6 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore;
-using mapa_conocimiento_api.Models;
+using System;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
+using mapa_conocimiento_api.Models;
 
 namespace mapa_conocimiento_api.Repositorios
 {
@@ -14,6 +15,20 @@ namespace mapa_conocimiento_api.Repositorios
 
         public async Task CrearAsync(aa_proyecto entidad)
         {
+            var existente = await _context.aa_proyecto
+                .IgnoreQueryFilters()
+                .FirstOrDefaultAsync(a => a.proyecto == entidad.proyecto && a.area_aplicacion == entidad.area_aplicacion);
+
+            if (existente != null)
+            {
+                if (existente.activo)
+                    throw new ArgumentException("El área de aplicación ya se encuentra asignada a este proyecto.");
+
+                existente.activo = true;
+                await _context.SaveChangesAsync();
+                return;
+            }
+
             entidad.activo = true;
             await _context.aa_proyecto.AddAsync(entidad);
             await _context.SaveChangesAsync();

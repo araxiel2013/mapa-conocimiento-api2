@@ -26,6 +26,28 @@ namespace mapa_conocimiento_api.Repositorios
 
         public async Task CrearAsync(aliado entidad)
         {
+            var existente = await _context.aliado
+                .IgnoreQueryFilters()
+                .FirstOrDefaultAsync(a => a.nit == entidad.nit);
+
+            if (existente != null)
+            {
+                if (existente.activo)
+                {
+                    throw new ArgumentException($"Ya existe un aliado registrado con el NIT {entidad.nit}.");
+                }
+
+                // Reactivación si estaba previamente inactivado (borrado lógico)
+                existente.razon_social = entidad.razon_social;
+                existente.nombre_contacto = entidad.nombre_contacto;
+                existente.correo = entidad.correo;
+                existente.telefono = entidad.telefono;
+                existente.ciudad = entidad.ciudad;
+                existente.activo = true;
+                await _context.SaveChangesAsync();
+                return;
+            }
+
             entidad.activo = true; // Todo nuevo registro nace activo por defecto
             await _context.aliado.AddAsync(entidad);
             await _context.SaveChangesAsync();

@@ -20,12 +20,32 @@ namespace mapa_conocimiento_api.Repositorios
 
         public async Task<termino_clave?> ObtenerPorIdAsync(string termino)
         {
-            // Usamos FindAsync pasándole la llave primaria tipo string
-            return await _context.termino_clave.FindAsync(termino);
+            var terminoNormalizado = termino.Trim();
+            return await _context.termino_clave
+                .FirstOrDefaultAsync(t => t.termino.ToLower() == terminoNormalizado.ToLower());
         }
 
         public async Task CrearAsync(termino_clave entidad)
         {
+            var terminoNormalizado = entidad.termino.Trim();
+            var existente = await _context.termino_clave
+                .IgnoreQueryFilters()
+                .FirstOrDefaultAsync(t => t.termino.ToLower() == terminoNormalizado.ToLower());
+
+            if (existente != null)
+            {
+                if (existente.activo)
+                {
+                    throw new ArgumentException($"Ya existe el término clave '{entidad.termino}'.");
+                }
+
+                // Reactivación si estaba previamente inactivado (borrado lógico)
+                existente.activo = true;
+                await _context.SaveChangesAsync();
+                return;
+            }
+
+            entidad.termino = terminoNormalizado;
             entidad.activo = true; // El registro nace activo
             await _context.termino_clave.AddAsync(entidad);
             await _context.SaveChangesAsync();
@@ -33,7 +53,9 @@ namespace mapa_conocimiento_api.Repositorios
 
         public async Task EliminarAsync(string termino)
         {
-            var entidad = await _context.termino_clave.FindAsync(termino);
+            var terminoNormalizado = termino.Trim();
+            var entidad = await _context.termino_clave
+                .FirstOrDefaultAsync(t => t.termino.ToLower() == terminoNormalizado.ToLower());
             if (entidad != null)
             {
                 // Aplicamos el borrado lógico
