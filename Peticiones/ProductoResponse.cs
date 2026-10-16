@@ -12,7 +12,7 @@ namespace mapa_conocimiento_api.Peticiones
         // Reutilizamos el comodín creado anteriormente
         public ItemRelacionadoResponse? proyecto { get; set; }
         
-        // No admite nulos porque la llave foránea es estricta
-        public required ItemRelacionadoResponse tipo_producto { get; set; }
+        // Relación con tipo_producto (puede ser nulo si la entidad relacionada fue inactivada o no existe)
+        public ItemRelacionadoResponse? tipo_producto { get; set; }
     }
 }
