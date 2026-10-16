@@ -29,6 +29,14 @@ namespace mapa_conocimiento_api.Repositorios
                 .FirstOrDefaultAsync(u => u.id == id);
         }
 
+        public async Task<usuario?> ObtenerPorUsernameConRolesAsync(string username)
+        {
+            return await _context.usuario
+                .Include(u => u.RolesUsuario.Where(ru => ru.activo))
+                    .ThenInclude(ru => ru.RolRelacionado)
+                .FirstOrDefaultAsync(u => u.username == username);
+        }
+
         public async Task<bool> ExisteUsernameOEmailAsync(string username, string email)
         {
             return await _context.usuario

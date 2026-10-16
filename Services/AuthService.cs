@@ -1,31 +1,28 @@
-using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using mapa_conocimiento_api.Models;
 using mapa_conocimiento_api.Peticiones;
+using mapa_conocimiento_api.Repositorios;
 
 namespace mapa_conocimiento_api.Servicios
 {
     public class AuthService : IAuthService
     {
-        private readonly postgresContext _context;
+        private readonly IUsuarioRepository _usuarioRepository;
         private readonly IConfiguration _configuration;
 
-        public AuthService(postgresContext context, IConfiguration configuration)
+        public AuthService(IUsuarioRepository usuarioRepository, IConfiguration configuration)
         {
-            _context = context;
+            _usuarioRepository = usuarioRepository;
             _configuration = configuration;
         }
 
         public async Task<LoginResponse?> AutenticarAsync(LoginRequest peticion)
         {
-            // 1. Buscamos el usuario en BD incluyendo sus roles a través de la tabla puente
-            var usuario = await _context.usuario
-                .Include(u => u.RolesUsuario)
-                    .ThenInclude(ru => ru.RolRelacionado)
-                .FirstOrDefaultAsync(u => u.username == peticion.username);
+            // 1. Buscamos el usuario en BD a través del repositorio incluyendo sus roles
+            var usuario = await _usuarioRepository.ObtenerPorUsernameConRolesAsync(peticion.username);
 
             // 2. Comparamos la contraseña en texto plano contra el Hash BCrypt de la base de datos
             if (usuario == null || !BCrypt.Net.BCrypt.Verify(peticion.password, usuario.password))
@@ -79,5 +76,7 @@ namespace mapa_conocimiento_api.Servicios
                 }
             };
         }
+
+        public Task<LoginResponse?> LoginAsync(LoginRequest peticion) => AutenticarAsync(peticion);
     }
 }
