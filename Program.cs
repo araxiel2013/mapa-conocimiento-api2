@@ -164,11 +164,18 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IUsuarioRepository, UsuarioRepository>();
 builder.Services.AddScoped<IUsuarioService, UsuarioService>();
 // ====================================================================
+// CONFIGURACIÓN DE CORS - FASE 3 / SEGURIDAD
+// ====================================================================
+var corsOriginsConfigurados = builder.Configuration.GetSection("CorsOrigins").Get<string[]>();
+var allowedOrigins = (corsOriginsConfigurados != null && corsOriginsConfigurados.Length > 0)
+    ? corsOriginsConfigurados
+    : new[] { "http://localhost:5173", "http://localhost:3000" };
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("PermitirFrontend", policy =>
     {
-        policy.AllowAnyOrigin() // Permite cualquier puerto (React)
+        policy.WithOrigins(allowedOrigins)
               .AllowAnyHeader()
               .AllowAnyMethod();
     });
