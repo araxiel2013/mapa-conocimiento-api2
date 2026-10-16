@@ -1,5 +1,6 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import InputInstitucional from '../ui/InputInstitucional';
+import api from '../../api/axiosConfig';
 
 
 export default function FormAreaAplicacion() {
@@ -17,21 +18,13 @@ export default function FormAreaAplicacion() {
     setMensaje({ texto: '', tipo: '' });
 
     try {
-      const respuesta = await fetch('http://localhost:5000/api/AreaAplicacion', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ nombre }) 
-      });
+      const respuesta = await api.post('/AreaAplicacion', { nombre });
 
-      if (respuesta.ok) {
-        const datos = await respuesta.json();
-        setMensaje({ texto: `¡Guardado con éxito! ID asignado: ${datos.id}`, tipo: 'exito' });
-        setNombre('');
-      } else {
-        setMensaje({ texto: 'Hubo un error al guardar los datos.', tipo: 'error' });
-      }
+      const datos = respuesta.data;
+      setMensaje({ texto: `¡Guardado con éxito! ID asignado: ${datos.id}`, tipo: 'exito' });
+      setNombre('');
     } catch (error) {
-      setMensaje({ texto: 'Error de conexión con el servidor.', tipo: 'error' });
+      setMensaje({ texto: 'Hubo un error al guardar los datos.', tipo: 'error' });
     } finally {
       setCargando(false);
     }

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import InputInstitucional from '../ui/InputInstitucional';
+import api from '../../api/axiosConfig';
 
 export default function FormTipoProducto() {
   const [nombre, setNombre] = useState('');
@@ -18,21 +19,13 @@ export default function FormTipoProducto() {
     setMensaje({ texto: '', tipo: '' });
 
     try {
-      const respuesta = await fetch('http://localhost:5000/api/TipoProducto', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ nombre, descripcion }) 
-      });
+      await api.post('/TipoProducto', { nombre, descripcion });
 
-      if (respuesta.ok) {
-        setMensaje({ texto: '¡Guardado con éxito!', tipo: 'exito' });
-        setNombre('');
-        setDescripcion('');
-      } else {
-        setMensaje({ texto: 'Hubo un error al guardar los datos.', tipo: 'error' });
-      }
+      setMensaje({ texto: '¡Guardado con éxito!', tipo: 'exito' });
+      setNombre('');
+      setDescripcion('');
     } catch (error) {
-      setMensaje({ texto: 'Error de conexión con el servidor.', tipo: 'error' });
+      setMensaje({ texto: 'Hubo un error al guardar los datos.', tipo: 'error' });
     } finally {
       setCargando(false);
     }

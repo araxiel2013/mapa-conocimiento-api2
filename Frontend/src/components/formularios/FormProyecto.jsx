@@ -1,5 +1,6 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import InputInstitucional from '../ui/InputInstitucional';
+import api from '../../api/axiosConfig';
 
 export default function FormProyecto() {
   const [datos, setDatos] = useState({
@@ -29,19 +30,11 @@ export default function FormProyecto() {
         fecha_fin: datos.fecha_fin ? new Date(datos.fecha_fin).toISOString() : null,
       };
 
-      const respuesta = await fetch('http://localhost:5000/api/proyecto', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      });
-      if (respuesta.ok) {
-        setMensaje({ texto: '¡Guardado con éxito!', tipo: 'exito' });
-        setDatos({ titulo: '', resumen: '', presupuesto: '', tipo_financiacion: '', tipo_fondos: '', fecha_inicio: '', fecha_fin: '' });
-      } else {
-        setMensaje({ texto: 'Hubo un error.', tipo: 'error' });
-      }
+      await api.post('/proyecto', payload);
+      setMensaje({ texto: '¡Guardado con éxito!', tipo: 'exito' });
+      setDatos({ titulo: '', resumen: '', presupuesto: '', tipo_financiacion: '', tipo_fondos: '', fecha_inicio: '', fecha_fin: '' });
     } catch (error) {
-      setMensaje({ texto: 'Error de conexión.', tipo: 'error' });
+      setMensaje({ texto: 'Hubo un error.', tipo: 'error' });
     }
   };
 
