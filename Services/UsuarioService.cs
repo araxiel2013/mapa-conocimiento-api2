@@ -60,6 +60,12 @@ namespace mapa_conocimiento_api.Servicios
                 }
             }
 
+            // Validamos que los roles especificados existan y se encuentren activos
+            if (peticion.roles_ids == null || !peticion.roles_ids.Any() || !await _repositorio.ExistenRolesActivosAsync(peticion.roles_ids))
+            {
+                throw new ArgumentException("Uno o más roles especificados no existen o están inactivos.");
+            }
+
             var nuevoUsuario = new usuario
             {
                 username = peticion.username,

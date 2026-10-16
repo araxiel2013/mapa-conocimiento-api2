@@ -8,6 +8,7 @@ namespace mapa_conocimiento_api.Repositorios
         Task<usuario?> ObtenerPorIdAsync(int id);
         Task<bool> ExisteUsernameOEmailAsync(string username, string email);
         Task<bool> ExisteUsernameOEmailIgnorandoFiltrosAsync(string username, string email);
+        Task<bool> ExistenRolesActivosAsync(List<int> rolesIds);
         Task CrearAsync(usuario entidad, List<int> roles_ids);
         Task EliminarAsync(int id);
     }

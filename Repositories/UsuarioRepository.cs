@@ -42,6 +42,20 @@ namespace mapa_conocimiento_api.Repositorios
                 .AnyAsync(u => u.username == username || u.email == email);
         }
 
+        public async Task<bool> ExistenRolesActivosAsync(List<int> rolesIds)
+        {
+            if (rolesIds == null || rolesIds.Count == 0)
+                return false;
+
+            var idsUnicos = rolesIds.Distinct().ToList();
+
+            var rolesValidosCount = await _context.rol
+                .Where(r => r.activo && idsUnicos.Contains(r.id))
+                .CountAsync();
+
+            return rolesValidosCount == idsUnicos.Count;
+        }
+
         public async Task CrearAsync(usuario entidad, List<int> roles_ids)
         {
             // Iniciamos una transacción porque insertaremos en dos tablas (usuario y rol_usuario)
@@ -56,7 +70,7 @@ namespace mapa_conocimiento_api.Repositorios
                 await _context.SaveChangesAsync(); // Se guarda para obtener el ID generado
 
                 // Insertamos en la tabla puente los roles asignados
-                foreach (var rolId in roles_ids)
+                foreach (var rolId in roles_ids.Distinct())
                 {
                     var rolUsuario = new rol_usuario
                     {
