@@ -44,9 +44,16 @@ namespace mapa_conocimiento_api.Controllers
         [HttpPost]
         public async Task<IActionResult> Crear([FromBody] AreaConocimientoCrear peticion)
         {
-            var nuevaEntidad = await _servicio.CrearAsync(peticion);
-            // 201 Created, devuelve la URL para consultar el nuevo recurso y el objeto creado
-            return CreatedAtAction(nameof(ObtenerPorId), new { id = nuevaEntidad.id }, nuevaEntidad);
+            try
+            {
+                var nuevaEntidad = await _servicio.CrearAsync(peticion);
+                // 201 Created, devuelve la URL para consultar el nuevo recurso y el objeto creado
+                return CreatedAtAction(nameof(ObtenerPorId), new { id = nuevaEntidad.id }, nuevaEntidad);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new { estado = 400, mensaje = ex.Message });
+            }
         }
 
         // PUT: api/AreaConocimiento/5

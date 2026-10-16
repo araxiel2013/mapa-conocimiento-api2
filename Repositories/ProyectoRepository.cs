@@ -26,6 +26,34 @@ namespace mapa_conocimiento_api.Repositorios
 
         public async Task CrearAsync(proyecto entidad)
         {
+            var tituloNormalizado = entidad.titulo.Trim();
+            var existente = await _context.proyecto
+                .IgnoreQueryFilters()
+                .FirstOrDefaultAsync(p => (entidad.id > 0 && p.id == entidad.id) ||
+                                          p.titulo.ToLower() == tituloNormalizado.ToLower());
+
+            if (existente != null)
+            {
+                if (existente.activo)
+                {
+                    throw new ArgumentException($"Ya existe un proyecto con el título '{entidad.titulo}'.");
+                }
+
+                // Reactivación si estaba previamente inactivado (borrado lógico)
+                existente.titulo = tituloNormalizado;
+                existente.resumen = entidad.resumen;
+                existente.presupuesto = entidad.presupuesto;
+                existente.tipo_financiacion = entidad.tipo_financiacion;
+                existente.tipo_fondos = entidad.tipo_fondos;
+                existente.fecha_inicio = entidad.fecha_inicio;
+                existente.fecha_fin = entidad.fecha_fin;
+                existente.activo = true;
+                await _context.SaveChangesAsync();
+                entidad.id = existente.id;
+                return;
+            }
+
+            entidad.titulo = tituloNormalizado;
             entidad.activo = true;
             await _context.proyecto.AddAsync(entidad);
             await _context.SaveChangesAsync();
