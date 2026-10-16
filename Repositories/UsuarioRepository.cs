@@ -35,6 +35,13 @@ namespace mapa_conocimiento_api.Repositorios
                 .AnyAsync(u => u.username == username || u.email == email);
         }
 
+        public async Task<bool> ExisteUsernameOEmailIgnorandoFiltrosAsync(string username, string email)
+        {
+            return await _context.usuario
+                .IgnoreQueryFilters()
+                .AnyAsync(u => u.username == username || u.email == email);
+        }
+
         public async Task CrearAsync(usuario entidad, List<int> roles_ids)
         {
             // Iniciamos una transacción porque insertaremos en dos tablas (usuario y rol_usuario)

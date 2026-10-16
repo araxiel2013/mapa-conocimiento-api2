@@ -46,10 +46,18 @@ namespace mapa_conocimiento_api.Servicios
 
         public async Task<UsuarioResponse> CrearAsync(UsuarioCrear peticion)
         {
-            // Validamos que el username o correo no existan ya
-            if (await _repositorio.ExisteUsernameOEmailAsync(peticion.username, peticion.email))
+            // Validamos si el username o correo ya existen en el sistema (incluyendo borrados lógicos)
+            if (await _repositorio.ExisteUsernameOEmailIgnorandoFiltrosAsync(peticion.username, peticion.email))
             {
-                throw new ArgumentException("El nombre de usuario o correo ya está en uso.");
+                bool estaActivo = await _repositorio.ExisteUsernameOEmailAsync(peticion.username, peticion.email);
+                if (estaActivo)
+                {
+                    throw new ArgumentException("El nombre de usuario o correo ya existe y se encuentra activo en el sistema.");
+                }
+                else
+                {
+                    throw new ArgumentException("El nombre de usuario o correo pertenece a un usuario inactivo en el sistema.");
+                }
             }
 
             var nuevoUsuario = new usuario
