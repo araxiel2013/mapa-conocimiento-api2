@@ -60,12 +60,19 @@ namespace mapa_conocimiento_api.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> Actualizar(int id, [FromBody] AreaConocimientoEditar peticion)
         {
-            var fueActualizado = await _servicio.ActualizarAsync(id, peticion);
-            if (!fueActualizado) 
+            try
             {
-                return NotFound(new { mensaje = "El área de conocimiento no fue encontrada para actualizar." }); // 404 Not Found
+                var fueActualizado = await _servicio.ActualizarAsync(id, peticion);
+                if (!fueActualizado) 
+                {
+                    return NotFound(new { mensaje = "El área de conocimiento no fue encontrada para actualizar." }); // 404 Not Found
+                }
+                return Ok(new { mensaje = "Área de conocimiento actualizada correctamente." }); // 200 OK
             }
-            return Ok(new { mensaje = "Área de conocimiento actualizada correctamente." }); // 200 OK
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new { estado = 400, mensaje = ex.Message });
+            }
         }
 
         // DELETE: api/AreaConocimiento/5

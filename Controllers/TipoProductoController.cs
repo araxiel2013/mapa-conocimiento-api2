@@ -46,8 +46,15 @@ namespace mapa_conocimiento_api.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> Actualizar(int id, [FromBody] TipoProductoEditar peticion)
         {
-            if (!await _servicio.ActualizarAsync(id, peticion)) return NotFound(new { mensaje = "El tipo de producto no fue encontrado." });
-            return Ok(new { mensaje = "Tipo de producto actualizado correctamente." });
+            try
+            {
+                if (!await _servicio.ActualizarAsync(id, peticion)) return NotFound(new { mensaje = "El tipo de producto no fue encontrado." });
+                return Ok(new { mensaje = "Tipo de producto actualizado correctamente." });
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new { estado = 400, mensaje = ex.Message });
+            }
         }
 
         [HttpDelete("{id}")]

@@ -56,12 +56,19 @@ namespace mapa_conocimiento_api.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> Actualizar(int id, [FromBody] LineaInvestigacionEditar peticion)
         {
-            var fueActualizado = await _servicio.ActualizarAsync(id, peticion);
-            if (!fueActualizado) 
+            try
             {
-                return NotFound(new { mensaje = "La línea de investigación no fue encontrada para actualizar." });
+                var fueActualizado = await _servicio.ActualizarAsync(id, peticion);
+                if (!fueActualizado) 
+                {
+                    return NotFound(new { mensaje = "La línea de investigación no fue encontrada para actualizar." });
+                }
+                return Ok(new { mensaje = "Línea de investigación actualizada correctamente." });
             }
-            return Ok(new { mensaje = "Línea de investigación actualizada correctamente." });
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new { estado = 400, mensaje = ex.Message });
+            }
         }
 
         // DELETE: api/LineaInvestigacion/5

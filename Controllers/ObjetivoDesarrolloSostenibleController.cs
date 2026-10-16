@@ -56,12 +56,19 @@ namespace mapa_conocimiento_api.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> Actualizar(int id, [FromBody] ObjetivoDesarrolloSostenibleEditar peticion)
         {
-            var fueActualizado = await _servicio.ActualizarAsync(id, peticion);
-            if (!fueActualizado) 
+            try
             {
-                return NotFound(new { mensaje = "El ODS no fue encontrado para actualizar." }); 
+                var fueActualizado = await _servicio.ActualizarAsync(id, peticion);
+                if (!fueActualizado) 
+                {
+                    return NotFound(new { mensaje = "El ODS no fue encontrado para actualizar." }); 
+                }
+                return Ok(new { mensaje = "ODS actualizado correctamente." }); 
             }
-            return Ok(new { mensaje = "ODS actualizado correctamente." }); 
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new { estado = 400, mensaje = ex.Message });
+            }
         }
 
         // DELETE: api/ObjetivoDesarrolloSostenible/5
