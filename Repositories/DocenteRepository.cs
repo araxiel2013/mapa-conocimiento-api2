@@ -27,38 +27,74 @@ namespace mapa_conocimiento_api.Repositorios
                 .FirstOrDefaultAsync(d => d.cedula == cedula);
         }
 
+        public async Task<docente?> ObtenerPorCedulaOCorreoIgnorandoFiltrosAsync(int cedula, string correo)
+        {
+            return await _context.docente
+                .IgnoreQueryFilters()
+                .Include(d => d.LineaInvestigacionRelacionada)
+                .FirstOrDefaultAsync(d => d.cedula == cedula || d.correo == correo);
+        }
+
         public async Task CrearAsync(docente entidad)
         {
             var existente = await _context.docente
                 .IgnoreQueryFilters()
-                .FirstOrDefaultAsync(d => d.cedula == entidad.cedula);
+                .FirstOrDefaultAsync(d => d.cedula == entidad.cedula || d.correo == entidad.correo);
 
             if (existente != null)
             {
                 if (existente.activo)
                 {
-                    throw new ArgumentException($"Ya existe un docente registrado con la cédula {entidad.cedula}.");
+                    if (existente.cedula == entidad.cedula)
+                    {
+                        throw new ArgumentException($"Ya existe un docente registrado con la cédula {entidad.cedula}.");
+                    }
+                    else
+                    {
+                        throw new ArgumentException($"Ya existe un docente registrado con el correo {entidad.correo}.");
+                    }
                 }
 
-                // Reactivación si estaba previamente inactivado (borrado lógico)
-                existente.nombres = entidad.nombres;
-                existente.apellidos = entidad.apellidos;
-                existente.genero = entidad.genero;
-                existente.cargo = entidad.cargo;
-                existente.fecha_nacimiento = entidad.fecha_nacimiento;
-                existente.correo = entidad.correo;
-                existente.telefono = entidad.telefono;
-                existente.url_cvlac = entidad.url_cvlac;
-                existente.fecha_actualizacion = entidad.fecha_actualizacion;
-                existente.escalafon = entidad.escalafon;
-                existente.perfil = entidad.perfil;
-                existente.cat_minciencia = entidad.cat_minciencia;
-                existente.conv_minciencia = entidad.conv_minciencia;
-                existente.nacionalidad = entidad.nacionalidad;
-                existente.linea_investigacion_principal = entidad.linea_investigacion_principal;
-                existente.activo = true;
-                await _context.SaveChangesAsync();
-                return;
+                // Si coincide en cédula, reactivamos y actualizamos los datos
+                if (existente.cedula == entidad.cedula)
+                {
+                    // Si el correo ingresado cambió respecto al registro inactivo, validar que no esté en uso por otro docente
+                    if (existente.correo != entidad.correo)
+                    {
+                        var correoEnUso = await _context.docente
+                            .IgnoreQueryFilters()
+                            .AnyAsync(d => d.correo == entidad.correo && d.cedula != entidad.cedula);
+                        if (correoEnUso)
+                        {
+                            throw new ArgumentException($"El correo {entidad.correo} ya se encuentra registrado en el sistema.");
+                        }
+                    }
+
+                    // Reactivación si estaba previamente inactivado (borrado lógico)
+                    existente.nombres = entidad.nombres;
+                    existente.apellidos = entidad.apellidos;
+                    existente.genero = entidad.genero;
+                    existente.cargo = entidad.cargo;
+                    existente.fecha_nacimiento = entidad.fecha_nacimiento;
+                    existente.correo = entidad.correo;
+                    existente.telefono = entidad.telefono;
+                    existente.url_cvlac = entidad.url_cvlac;
+                    existente.fecha_actualizacion = entidad.fecha_actualizacion;
+                    existente.escalafon = entidad.escalafon;
+                    existente.perfil = entidad.perfil;
+                    existente.cat_minciencia = entidad.cat_minciencia;
+                    existente.conv_minciencia = entidad.conv_minciencia;
+                    existente.nacionalidad = entidad.nacionalidad;
+                    existente.linea_investigacion_principal = entidad.linea_investigacion_principal;
+                    existente.activo = true;
+                    await _context.SaveChangesAsync();
+                    return;
+                }
+                else
+                {
+                    // El correo pertenece a un docente inactivo con diferente cédula
+                    throw new ArgumentException($"El correo {entidad.correo} pertenece a un docente inactivo en el sistema.");
+                }
             }
 
             entidad.activo = true;

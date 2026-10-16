@@ -63,11 +63,6 @@ namespace mapa_conocimiento_api.Servicios
 
         public async Task<DocenteResponse> CrearAsync(DocenteCrear peticion)
         {
-            // Validar cédula no duplicada
-            var docenteExistente = await _repositorio.ObtenerPorIdAsync(peticion.cedula);
-            if (docenteExistente != null)
-                throw new ArgumentException($"Ya existe un docente registrado con la cédula {peticion.cedula}.");
-
             // VALIDACIÓN FASE 2: ¿La llave foránea existe y está activa?
             if (peticion.linea_investigacion_principal.HasValue)
             {
