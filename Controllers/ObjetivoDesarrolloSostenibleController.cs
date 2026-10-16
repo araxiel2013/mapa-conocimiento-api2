@@ -32,7 +32,7 @@ namespace mapa_conocimiento_api.Controllers
             var resultado = await _servicio.ObtenerPorIdAsync(id);
             if (resultado == null) 
             {
-                return NotFound(new { mensaje = "El ODS no fue encontrado." }); 
+                return NotFound(new { estado = 404, mensaje = "El ODS no fue encontrado." }); 
             }
             return Ok(resultado); 
         }
@@ -61,7 +61,7 @@ namespace mapa_conocimiento_api.Controllers
                 var fueActualizado = await _servicio.ActualizarAsync(id, peticion);
                 if (!fueActualizado) 
                 {
-                    return NotFound(new { mensaje = "El ODS no fue encontrado para actualizar." }); 
+                    return NotFound(new { estado = 404, mensaje = "El ODS no fue encontrado para actualizar." }); 
                 }
                 return Ok(new { mensaje = "ODS actualizado correctamente." }); 
             }
@@ -78,7 +78,7 @@ namespace mapa_conocimiento_api.Controllers
             var fueEliminado = await _servicio.EliminarAsync(id);
             if (!fueEliminado) 
             {
-                return NotFound(new { mensaje = "El ODS no fue encontrado para eliminar." }); 
+                return NotFound(new { estado = 404, mensaje = "El ODS no fue encontrado para eliminar." }); 
             }
             return Ok(new { mensaje = "ODS eliminado correctamente." }); 
         }

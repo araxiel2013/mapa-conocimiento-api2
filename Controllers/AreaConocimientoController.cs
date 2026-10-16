@@ -35,7 +35,7 @@ namespace mapa_conocimiento_api.Controllers
             var resultado = await _servicio.ObtenerPorIdAsync(id);
             if (resultado == null) 
             {
-                return NotFound(new { mensaje = "El área de conocimiento no fue encontrada." }); // 404 Not Found
+                return NotFound(new { estado = 404, mensaje = "El área de conocimiento no fue encontrada." }); // 404 Not Found
             }
             return Ok(resultado); // 200 OK
         }
@@ -65,7 +65,7 @@ namespace mapa_conocimiento_api.Controllers
                 var fueActualizado = await _servicio.ActualizarAsync(id, peticion);
                 if (!fueActualizado) 
                 {
-                    return NotFound(new { mensaje = "El área de conocimiento no fue encontrada para actualizar." }); // 404 Not Found
+                    return NotFound(new { estado = 404, mensaje = "El área de conocimiento no fue encontrada para actualizar." }); // 404 Not Found
                 }
                 return Ok(new { mensaje = "Área de conocimiento actualizada correctamente." }); // 200 OK
             }
@@ -82,7 +82,7 @@ namespace mapa_conocimiento_api.Controllers
             var fueEliminado = await _servicio.EliminarAsync(id);
             if (!fueEliminado) 
             {
-                return NotFound(new { mensaje = "El área de conocimiento no fue encontrada para eliminar." }); // 404 Not Found
+                return NotFound(new { estado = 404, mensaje = "El área de conocimiento no fue encontrada para eliminar." }); // 404 Not Found
             }
             return Ok(new { mensaje = "Área de conocimiento eliminada correctamente." }); // 200 OK
         }

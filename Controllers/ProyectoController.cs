@@ -26,7 +26,7 @@ namespace mapa_conocimiento_api.Controllers
         public async Task<IActionResult> ObtenerPorId(int id)
         {
             var resultado = await _servicio.ObtenerPorIdAsync(id);
-            if (resultado == null) return NotFound(new { mensaje = "El proyecto no fue encontrado." });
+            if (resultado == null) return NotFound(new { estado = 404, mensaje = "El proyecto no fue encontrado." });
             return Ok(resultado);
         }
 
@@ -49,7 +49,7 @@ namespace mapa_conocimiento_api.Controllers
         {
             try
             {
-                if (!await _servicio.ActualizarAsync(id, peticion)) return NotFound(new { mensaje = "El proyecto no fue encontrado." });
+                if (!await _servicio.ActualizarAsync(id, peticion)) return NotFound(new { estado = 404, mensaje = "El proyecto no fue encontrado." });
                 return Ok(new { mensaje = "Proyecto actualizado correctamente." });
             }
             catch (ArgumentException ex)
@@ -61,7 +61,7 @@ namespace mapa_conocimiento_api.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> Eliminar(int id)
         {
-            if (!await _servicio.EliminarAsync(id)) return NotFound(new { mensaje = "El proyecto no fue encontrado." });
+            if (!await _servicio.EliminarAsync(id)) return NotFound(new { estado = 404, mensaje = "El proyecto no fue encontrado." });
             return Ok(new { mensaje = "Proyecto eliminado correctamente." });
         }
     }

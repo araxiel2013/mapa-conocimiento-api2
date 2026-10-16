@@ -183,6 +183,35 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
+// ====================================================================
+// MANEJO GLOBAL DE EXCEPCIONES (MIDDLEWARE) - BE-11
+// ====================================================================
+app.UseExceptionHandler(exceptionHandlerApp =>
+{
+    exceptionHandlerApp.Run(async context =>
+    {
+        context.Response.StatusCode = StatusCodes.Status500InternalServerError;
+        context.Response.ContentType = "application/json";
+
+        var exceptionHandlerPathFeature = context.Features.Get<Microsoft.AspNetCore.Diagnostics.IExceptionHandlerPathFeature>();
+        var exception = exceptionHandlerPathFeature?.Error;
+
+        var logger = context.RequestServices.GetRequiredService<ILoggerFactory>().CreateLogger("GlobalExceptionHandler");
+        if (exception != null)
+        {
+            logger.LogError(exception, "Excepción no controlada en la ruta {Path}: {Message}", exceptionHandlerPathFeature?.Path, exception.Message);
+        }
+
+        var errorResponse = new
+        {
+            estado = 500,
+            mensaje = "Error interno en el servidor."
+        };
+
+        await context.Response.WriteAsJsonAsync(errorResponse);
+    });
+});
+
 // Configuración del pipeline de peticiones HTTP
 if (app.Environment.IsDevelopment())
 {
