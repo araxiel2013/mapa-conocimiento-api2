@@ -66,6 +66,11 @@ namespace mapa_conocimiento_api.Repositorios
             {
                 // Aplicamos el borrado lógico
                 entidad.activo = false;
+
+                // Cascada lógica sobre la tabla puente aliado_proyecto
+                var aliadoProyectoRelaciones = await _context.aliado_proyecto.Where(ap => ap.aliado == nit).ToListAsync();
+                foreach (var ap in aliadoProyectoRelaciones) ap.activo = false;
+
                 await _context.SaveChangesAsync();
             }
         }

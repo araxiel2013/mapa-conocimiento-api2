@@ -74,6 +74,11 @@ namespace mapa_conocimiento_api.Repositorios
             if (entidad != null)
             {
                 entidad.activo = false;
+
+                // Cascada lógica sobre la tabla puente docente_producto
+                var docenteProductoRelaciones = await _context.docente_producto.Where(dp => dp.producto == id).ToListAsync();
+                foreach (var dp in docenteProductoRelaciones) dp.activo = false;
+
                 await _context.SaveChangesAsync();
             }
         }

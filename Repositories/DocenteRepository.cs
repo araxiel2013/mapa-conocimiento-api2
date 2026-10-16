@@ -78,6 +78,14 @@ namespace mapa_conocimiento_api.Repositorios
             if (entidad != null)
             {
                 entidad.activo = false;
+
+                // Cascada lógica sobre las tablas puente asociadas al docente
+                var desarrollaRelaciones = await _context.desarrolla.Where(d => d.docente == cedula).ToListAsync();
+                foreach (var d in desarrollaRelaciones) d.activo = false;
+
+                var docenteProductoRelaciones = await _context.docente_producto.Where(dp => dp.docente == cedula).ToListAsync();
+                foreach (var dp in docenteProductoRelaciones) dp.activo = false;
+
                 await _context.SaveChangesAsync();
             }
         }

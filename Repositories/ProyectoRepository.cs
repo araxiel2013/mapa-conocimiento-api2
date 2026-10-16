@@ -71,6 +71,29 @@ namespace mapa_conocimiento_api.Repositorios
             if (entidad != null)
             {
                 entidad.activo = false;
+
+                // Cascada lógica sobre las tablas puente asociadas al proyecto
+                var acRelaciones = await _context.ac_proyecto.Where(r => r.proyecto == id).ToListAsync();
+                foreach (var r in acRelaciones) r.activo = false;
+
+                var aaRelaciones = await _context.aa_proyecto.Where(r => r.proyecto == id).ToListAsync();
+                foreach (var r in aaRelaciones) r.activo = false;
+
+                var aliadoRelaciones = await _context.aliado_proyecto.Where(r => r.proyecto == id).ToListAsync();
+                foreach (var r in aliadoRelaciones) r.activo = false;
+
+                var desarrollaRelaciones = await _context.desarrolla.Where(r => r.proyecto == id).ToListAsync();
+                foreach (var r in desarrollaRelaciones) r.activo = false;
+
+                var odsRelaciones = await _context.ods_proyecto.Where(r => r.proyecto == id).ToListAsync();
+                foreach (var r in odsRelaciones) r.activo = false;
+
+                var palabrasRelaciones = await _context.palabras_clave.Where(r => r.proyecto == id).ToListAsync();
+                foreach (var r in palabrasRelaciones) r.activo = false;
+
+                var lineaRelaciones = await _context.proyecto_linea.Where(r => r.proyecto == id).ToListAsync();
+                foreach (var r in lineaRelaciones) r.activo = false;
+
                 await _context.SaveChangesAsync();
             }
         }

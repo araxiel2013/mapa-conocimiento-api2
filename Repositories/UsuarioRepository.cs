@@ -98,6 +98,11 @@ namespace mapa_conocimiento_api.Repositorios
             {
                 entidad.activo = false;
                 entidad.fecha_actualizacion = DateTime.UtcNow;
+
+                // Cascada lógica sobre la tabla puente rol_usuario
+                var rolUsuarioRelaciones = await _context.rol_usuario.Where(ru => ru.usuario_id == id).ToListAsync();
+                foreach (var ru in rolUsuarioRelaciones) ru.activo = false;
+
                 await _context.SaveChangesAsync();
             }
         }
