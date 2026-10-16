@@ -1,4 +1,5 @@
 using System;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using mapa_conocimiento_api.Peticiones;
 using mapa_conocimiento_api.Servicios;
@@ -8,6 +9,7 @@ namespace mapa_conocimiento_api.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize]
     public class ProyectoController : ControllerBase
     {
         private readonly IProyectoService _servicio;

@@ -2,7 +2,11 @@ using Microsoft.EntityFrameworkCore;
 using mapa_conocimiento_api.Models;
 using mapa_conocimiento_api.Repositorios;
 using mapa_conocimiento_api.Servicios;
-
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+using Microsoft.OpenApi.Models;
+    
 var builder = WebApplication.CreateBuilder(args);
 
 // Agregar soporte para controladores
@@ -15,7 +19,59 @@ builder.Services.AddControllers()
 
 // Configuración de Swagger para documentar la API
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+// --- CONFIGURACIÓN SWAGGER CON CANDADO (FASE 3) ---
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new OpenApiInfo { Title = "Mapa de Conocimiento API", Version = "v1" });
+    
+    // Definimos el esquema de seguridad para Swagger
+    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        Description = "JWT Authorization header usando el esquema Bearer. \r\n\r\n Escribe 'Bearer' [espacio] y luego tu token.\r\n\r\nEjemplo: \"Bearer 12345abcdef\"",
+        Name = "Authorization",
+        In = ParameterLocation.Header,
+        Type = SecuritySchemeType.ApiKey,
+        Scheme = "Bearer"
+    });
+
+    c.AddSecurityRequirement(new OpenApiSecurityRequirement()
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                },
+                Scheme = "oauth2",
+                Name = "Bearer",
+                In = ParameterLocation.Header,
+            },
+            new List<string>()
+        }
+    });
+});
+
+// --- CONFIGURACIÓN DE AUTENTICACIÓN JWT (FASE 3) ---
+var jwtSettings = builder.Configuration.GetSection("JwtSettings");
+var secretKey = jwtSettings.GetValue<string>("Key");
+
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = jwtSettings.GetValue<string>("Issuer"),
+            ValidAudience = jwtSettings.GetValue<string>("Audience"),
+            // Convierte el string de la clave en un arreglo de bytes para la firma criptográfica
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey!))
+        };
+    });
 
 // Configuración del DbContext con PostgreSQL (Supabase)
 builder.Services.AddDbContext<postgresContext>(options =>
@@ -102,6 +158,12 @@ builder.Services.AddScoped<IDocenteProductoRepository, DocenteProductoRepository
 builder.Services.AddScoped<IDocenteProductoService, DocenteProductoService>();
 
 // ====================================================================
+// INYECCIÓN DE DEPENDENCIAS - FASE 3
+// ====================================================================
+builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IUsuarioRepository, UsuarioRepository>();
+builder.Services.AddScoped<IUsuarioService, UsuarioService>();
+// ====================================================================
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("PermitirFrontend", policy =>
@@ -123,6 +185,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseCors("PermitirFrontend");
+app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
 

@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using mapa_conocimiento_api.Models;
 using mapa_conocimiento_api.Peticiones;
@@ -8,6 +9,7 @@ namespace mapa_conocimiento_api.Controllers
     // Habilita la validación automática de DTOs y define la ruta base: api/AreaConocimiento
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize]
     public class AreaConocimientoController : ControllerBase
     {
         private readonly IAreaConocimientoService _servicio;
