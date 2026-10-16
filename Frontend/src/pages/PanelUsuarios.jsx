@@ -15,7 +15,7 @@ const PanelUsuarios = () => {
                 const response = await api.get('/Usuario');
                 setUsuarios(response.data.datos || []);
             } catch (err) {
-                setError('No tienes permisos para ver esta sección o hubo un error al cargar los usuarios.');
+                setError(err.response?.data?.mensaje || 'No tienes permisos para ver esta sección o hubo un error al cargar los usuarios.');
             } finally {
                 setCargando(false);
             }

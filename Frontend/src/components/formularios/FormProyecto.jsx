@@ -34,7 +34,10 @@ export default function FormProyecto() {
       setMensaje({ texto: '¡Guardado con éxito!', tipo: 'exito' });
       setDatos({ titulo: '', resumen: '', presupuesto: '', tipo_financiacion: '', tipo_fondos: '', fecha_inicio: '', fecha_fin: '' });
     } catch (error) {
-      setMensaje({ texto: 'Hubo un error.', tipo: 'error' });
+      setMensaje({ 
+        texto: error.response?.data?.mensaje || 'Hubo un error al guardar el proyecto.', 
+        tipo: 'error' 
+      });
     }
   };
 

@@ -23,7 +23,10 @@ export default function FormTerminoClave() {
       setMensaje({ texto: `¡Guardado con éxito!`, tipo: 'exito' });
       setTermino('');
     } catch (error) {
-      setMensaje({ texto: 'Hubo un error al guardar los datos.', tipo: 'error' });
+      setMensaje({ 
+        texto: error.response?.data?.mensaje || 'Hubo un error al guardar los datos.', 
+        tipo: 'error' 
+      });
     } finally {
       setCargando(false);
     }

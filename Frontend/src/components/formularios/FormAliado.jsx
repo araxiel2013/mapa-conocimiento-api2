@@ -42,7 +42,10 @@ export default function FormAliado() {
       setTelefono('');
       setCiudad('');
     } catch (error) {
-      setMensaje({ texto: 'Hubo un error al guardar los datos.', tipo: 'error' });
+      setMensaje({ 
+        texto: error.response?.data?.mensaje || 'Hubo un error al guardar los datos.', 
+        tipo: 'error' 
+      });
     } finally {
       setCargando(false);
     }

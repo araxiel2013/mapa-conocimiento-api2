@@ -27,7 +27,7 @@ const Login = () => {
             login(token, usuario);
             navigate('/dashboard');
         } catch (err) {
-            setError(err.response?.data?.detalle || 'Credenciales inválidas. Verifica tu usuario y contraseña.');
+            setError(err.response?.data?.mensaje || err.response?.data?.detalle || 'Credenciales inválidas. Verifica tu usuario y contraseña.');
         } finally {
             setCargando(false);
         }
