@@ -76,9 +76,10 @@ namespace mapa_conocimiento_api.Servicios
                     throw new ArgumentException("La línea de investigación seleccionada no existe o está inactiva.");
             }
 
-            var nac = !string.IsNullOrWhiteSpace(peticion.nacionalidad) 
-                ? peticion.nacionalidad 
-                : (!string.IsNullOrWhiteSpace(peticion.nacionalidaad) ? peticion.nacionalidaad : "Colombiana");
+            if (string.IsNullOrWhiteSpace(peticion.nacionalidad))
+                throw new ArgumentException("La nacionalidad es obligatoria.");
+
+            var nacionalidadValida = peticion.nacionalidad.Trim();
 
             var nuevaEntidad = new docente
             {
@@ -98,7 +99,7 @@ namespace mapa_conocimiento_api.Servicios
                 perfil = peticion.perfil,
                 cat_minciencia = peticion.cat_minciencia,
                 conv_minciencia = peticion.conv_minciencia,
-                nacionalidad = nac,
+                nacionalidad = nacionalidadValida,
                 linea_investigacion_principal = peticion.linea_investigacion_principal,
                 activo = true
             };
@@ -122,9 +123,10 @@ namespace mapa_conocimiento_api.Servicios
                     throw new ArgumentException("La línea de investigación seleccionada no existe o está inactiva.");
             }
 
-            var nac = !string.IsNullOrWhiteSpace(peticion.nacionalidad) 
-                ? peticion.nacionalidad 
-                : (!string.IsNullOrWhiteSpace(peticion.nacionalidaad) ? peticion.nacionalidaad : entidadExistente.nacionalidad);
+            if (string.IsNullOrWhiteSpace(peticion.nacionalidad))
+                throw new ArgumentException("La nacionalidad es obligatoria.");
+
+            var nacionalidadValida = peticion.nacionalidad.Trim();
 
             entidadExistente.nombres = peticion.nombres;
             entidadExistente.apellidos = peticion.apellidos;
@@ -141,7 +143,7 @@ namespace mapa_conocimiento_api.Servicios
             entidadExistente.perfil = peticion.perfil;
             entidadExistente.cat_minciencia = peticion.cat_minciencia;
             entidadExistente.conv_minciencia = peticion.conv_minciencia;
-            entidadExistente.nacionalidad = nac;
+            entidadExistente.nacionalidad = nacionalidadValida;
             entidadExistente.linea_investigacion_principal = peticion.linea_investigacion_principal;
 
             await _repositorio.ActualizarAsync(entidadExistente);
