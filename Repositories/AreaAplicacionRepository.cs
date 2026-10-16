@@ -25,6 +25,28 @@ namespace mapa_conocimiento_api.Repositorios
 
         public async Task CrearAsync(area_aplicacion entidad)
         {
+            var nombreNormalizado = entidad.nombre.Trim();
+            var existente = await _context.area_aplicacion
+                .IgnoreQueryFilters()
+                .FirstOrDefaultAsync(a => (entidad.id > 0 && a.id == entidad.id) ||
+                                          a.nombre.ToLower() == nombreNormalizado.ToLower());
+
+            if (existente != null)
+            {
+                if (existente.activo)
+                {
+                    throw new ArgumentException($"Ya existe un área de aplicación con el nombre '{entidad.nombre}'.");
+                }
+
+                // Reactivación si estaba previamente inactivado (borrado lógico)
+                existente.nombre = nombreNormalizado;
+                existente.activo = true;
+                await _context.SaveChangesAsync();
+                entidad.id = existente.id;
+                return;
+            }
+
+            entidad.nombre = nombreNormalizado;
             entidad.activo = true; // El registro nace activo
             await _context.area_aplicacion.AddAsync(entidad);
             await _context.SaveChangesAsync();

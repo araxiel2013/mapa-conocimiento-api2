@@ -25,28 +25,42 @@ namespace mapa_conocimiento_api.Controllers
         public async Task<IActionResult> ObtenerPorId(int id)
         {
             var resultado = await _servicio.ObtenerPorIdAsync(id);
-            if (resultado == null) return NotFound(new { mensaje = "El tipo de producto no fue encontrado." });
+            if (resultado == null) return NotFound(new { estado = 404, mensaje = "El tipo de producto no fue encontrado." });
             return Ok(resultado);
         }
 
         [HttpPost]
         public async Task<IActionResult> Crear([FromBody] TipoProductoCrear peticion)
         {
-            var nuevaEntidad = await _servicio.CrearAsync(peticion);
-            return CreatedAtAction(nameof(ObtenerPorId), new { id = nuevaEntidad.id }, nuevaEntidad);
+            try
+            {
+                var nuevaEntidad = await _servicio.CrearAsync(peticion);
+                return CreatedAtAction(nameof(ObtenerPorId), new { id = nuevaEntidad.id }, nuevaEntidad);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new { estado = 400, mensaje = ex.Message });
+            }
         }
 
         [HttpPut("{id}")]
         public async Task<IActionResult> Actualizar(int id, [FromBody] TipoProductoEditar peticion)
         {
-            if (!await _servicio.ActualizarAsync(id, peticion)) return NotFound(new { mensaje = "El tipo de producto no fue encontrado." });
-            return Ok(new { mensaje = "Tipo de producto actualizado correctamente." });
+            try
+            {
+                if (!await _servicio.ActualizarAsync(id, peticion)) return NotFound(new { estado = 404, mensaje = "El tipo de producto no fue encontrado." });
+                return Ok(new { mensaje = "Tipo de producto actualizado correctamente." });
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new { estado = 400, mensaje = ex.Message });
+            }
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> Eliminar(int id)
         {
-            if (!await _servicio.EliminarAsync(id)) return NotFound(new { mensaje = "El tipo de producto no fue encontrado." });
+            if (!await _servicio.EliminarAsync(id)) return NotFound(new { estado = 404, mensaje = "El tipo de producto no fue encontrado." });
             return Ok(new { mensaje = "Tipo de producto eliminado correctamente." });
         }
     }

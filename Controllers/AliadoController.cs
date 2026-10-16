@@ -32,7 +32,7 @@ namespace mapa_conocimiento_api.Controllers
             var resultado = await _servicio.ObtenerPorIdAsync(nit);
             if (resultado == null) 
             {
-                return NotFound(new { mensaje = "El aliado no fue encontrado." });
+                return NotFound(new { estado = 404, mensaje = "El aliado no fue encontrado." });
             }
             return Ok(resultado);
         }
@@ -62,7 +62,7 @@ namespace mapa_conocimiento_api.Controllers
                 var fueActualizado = await _servicio.ActualizarAsync(nit, peticion);
                 if (!fueActualizado) 
                 {
-                    return NotFound(new { mensaje = "El aliado no fue encontrado para actualizar." });
+                    return NotFound(new { estado = 404, mensaje = "El aliado no fue encontrado para actualizar." });
                 }
                 return Ok(new { mensaje = "Aliado actualizado correctamente." });
             }
@@ -79,7 +79,7 @@ namespace mapa_conocimiento_api.Controllers
             var fueEliminado = await _servicio.EliminarAsync(nit);
             if (!fueEliminado) 
             {
-                return NotFound(new { mensaje = "El aliado no fue encontrado para eliminar." });
+                return NotFound(new { estado = 404, mensaje = "El aliado no fue encontrado para eliminar." });
             }
             return Ok(new { mensaje = "Aliado eliminado correctamente." });
         }

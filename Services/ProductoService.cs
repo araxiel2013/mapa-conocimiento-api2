@@ -37,11 +37,13 @@ namespace mapa_conocimiento_api.Servicios
                           nombre = entidad.ProyectoRelacionado.titulo 
                       } 
                     : null,
-                tipo_producto = new ItemRelacionadoResponse 
-                { 
-                    id = entidad.TipoProductoRelacionado!.id, 
-                    nombre = entidad.TipoProductoRelacionado.nombre 
-                }
+                tipo_producto = entidad.TipoProductoRelacionado != null 
+                    ? new ItemRelacionadoResponse 
+                      { 
+                          id = entidad.TipoProductoRelacionado.id, 
+                          nombre = entidad.TipoProductoRelacionado.nombre 
+                      } 
+                    : null
             };
         }
 
