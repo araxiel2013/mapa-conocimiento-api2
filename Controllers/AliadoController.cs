@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using mapa_conocimiento_api.Peticiones;
 using mapa_conocimiento_api.Servicios;
@@ -6,6 +7,7 @@ namespace mapa_conocimiento_api.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize]
     public class AliadoController : ControllerBase
     {
         private readonly IAliadoService _servicio;

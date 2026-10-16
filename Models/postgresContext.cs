@@ -33,6 +33,13 @@ namespace mapa_conocimiento_api.Models
         public DbSet<aa_proyecto> aa_proyecto { get; set; }
         public DbSet<docente_producto> docente_producto { get; set; }
 
+        // ====================================================================
+        // FASE 3: Seguridad y Usuarios
+        // ====================================================================
+        public DbSet<usuario> usuario { get; set; }
+        public DbSet<rol> rol { get; set; }
+        public DbSet<rol_usuario> rol_usuario { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -73,6 +80,22 @@ namespace mapa_conocimiento_api.Models
             modelBuilder.Entity<ods_proyecto>().HasQueryFilter(x => x.activo);
             modelBuilder.Entity<aa_proyecto>().HasQueryFilter(x => x.activo);
             modelBuilder.Entity<docente_producto>().HasQueryFilter(x => x.activo);
+
+            // ====================================================================
+            // FASE 3: Seguridad y Usuarios
+            // ====================================================================
+            // Llaves Primarias Compuestas
+            modelBuilder.Entity<rol_usuario>().HasKey(ru => new { ru.usuario_id, ru.rol_id });
+
+            // Restricciones UNIQUE
+            modelBuilder.Entity<usuario>().HasIndex(u => u.username).IsUnique();
+            modelBuilder.Entity<usuario>().HasIndex(u => u.email).IsUnique();
+            modelBuilder.Entity<rol>().HasIndex(r => r.nombre).IsUnique();
+
+            // Filtros Globales de Borrado Lógico (activo == true)
+            modelBuilder.Entity<usuario>().HasQueryFilter(x => x.activo);
+            modelBuilder.Entity<rol>().HasQueryFilter(x => x.activo);
+            modelBuilder.Entity<rol_usuario>().HasQueryFilter(x => x.activo);
         }
     }
 }
