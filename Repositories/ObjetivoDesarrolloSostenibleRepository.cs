@@ -26,6 +26,29 @@ namespace mapa_conocimiento_api.Repositorios
 
         public async Task CrearAsync(objetivo_desarrollo_sostenible entidad)
         {
+            var nombreNormalizado = entidad.nombre.Trim();
+            var existente = await _context.objetivo_desarrollo_sostenible
+                .IgnoreQueryFilters()
+                .FirstOrDefaultAsync(o => (entidad.id > 0 && o.id == entidad.id) ||
+                                          o.nombre.ToLower() == nombreNormalizado.ToLower());
+
+            if (existente != null)
+            {
+                if (existente.activo)
+                {
+                    throw new ArgumentException($"Ya existe un objetivo de desarrollo sostenible con el nombre '{entidad.nombre}'.");
+                }
+
+                // Reactivación si estaba previamente inactivado (borrado lógico)
+                existente.nombre = nombreNormalizado;
+                existente.categoria = entidad.categoria;
+                existente.activo = true;
+                await _context.SaveChangesAsync();
+                entidad.id = existente.id;
+                return;
+            }
+
+            entidad.nombre = nombreNormalizado;
             entidad.activo = true; // Todo nuevo registro nace activo por defecto
             await _context.objetivo_desarrollo_sostenible.AddAsync(entidad);
             await _context.SaveChangesAsync();

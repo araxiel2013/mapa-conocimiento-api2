@@ -32,7 +32,7 @@ namespace mapa_conocimiento_api.Controllers
             var resultado = await _servicio.ObtenerPorIdAsync(termino);
             if (resultado == null) 
             {
-                return NotFound(new { mensaje = "El término clave no fue encontrado." });
+                return NotFound(new { estado = 404, mensaje = "El término clave no fue encontrado." });
             }
             return Ok(resultado);
         }
@@ -60,7 +60,7 @@ namespace mapa_conocimiento_api.Controllers
             var fueEliminado = await _servicio.EliminarAsync(termino);
             if (!fueEliminado) 
             {
-                return NotFound(new { mensaje = "El término clave no fue encontrado para eliminar." });
+                return NotFound(new { estado = 404, mensaje = "El término clave no fue encontrado para eliminar." });
             }
             return Ok(new { mensaje = "Término clave eliminado correctamente." });
         }

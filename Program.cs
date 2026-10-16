@@ -164,17 +164,53 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IUsuarioRepository, UsuarioRepository>();
 builder.Services.AddScoped<IUsuarioService, UsuarioService>();
 // ====================================================================
+// CONFIGURACIÓN DE CORS - FASE 3 / SEGURIDAD
+// ====================================================================
+var corsOriginsConfigurados = builder.Configuration.GetSection("CorsOrigins").Get<string[]>();
+var allowedOrigins = (corsOriginsConfigurados != null && corsOriginsConfigurados.Length > 0)
+    ? corsOriginsConfigurados
+    : new[] { "http://localhost:5173", "http://localhost:3000" };
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("PermitirFrontend", policy =>
     {
-        policy.AllowAnyOrigin() // Permite cualquier puerto (React)
+        policy.WithOrigins(allowedOrigins)
               .AllowAnyHeader()
               .AllowAnyMethod();
     });
 });
 
 var app = builder.Build();
+
+// ====================================================================
+// MANEJO GLOBAL DE EXCEPCIONES (MIDDLEWARE) - BE-11
+// ====================================================================
+app.UseExceptionHandler(exceptionHandlerApp =>
+{
+    exceptionHandlerApp.Run(async context =>
+    {
+        context.Response.StatusCode = StatusCodes.Status500InternalServerError;
+        context.Response.ContentType = "application/json";
+
+        var exceptionHandlerPathFeature = context.Features.Get<Microsoft.AspNetCore.Diagnostics.IExceptionHandlerPathFeature>();
+        var exception = exceptionHandlerPathFeature?.Error;
+
+        var logger = context.RequestServices.GetRequiredService<ILoggerFactory>().CreateLogger("GlobalExceptionHandler");
+        if (exception != null)
+        {
+            logger.LogError(exception, "Excepción no controlada en la ruta {Path}: {Message}", exceptionHandlerPathFeature?.Path, exception.Message);
+        }
+
+        var errorResponse = new
+        {
+            estado = 500,
+            mensaje = "Error interno en el servidor."
+        };
+
+        await context.Response.WriteAsJsonAsync(errorResponse);
+    });
+});
 
 // Configuración del pipeline de peticiones HTTP
 if (app.Environment.IsDevelopment())
@@ -188,5 +224,8 @@ app.UseCors("PermitirFrontend");
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
+
+// Redirigir la raíz directamente a la documentación de Swagger
+app.MapGet("/", () => Results.Redirect("/swagger"));
 
 app.Run();

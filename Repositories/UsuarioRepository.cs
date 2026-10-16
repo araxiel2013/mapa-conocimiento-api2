@@ -29,10 +29,39 @@ namespace mapa_conocimiento_api.Repositorios
                 .FirstOrDefaultAsync(u => u.id == id);
         }
 
+        public async Task<usuario?> ObtenerPorUsernameConRolesAsync(string username)
+        {
+            return await _context.usuario
+                .Include(u => u.RolesUsuario.Where(ru => ru.activo))
+                    .ThenInclude(ru => ru.RolRelacionado)
+                .FirstOrDefaultAsync(u => u.username == username);
+        }
+
         public async Task<bool> ExisteUsernameOEmailAsync(string username, string email)
         {
             return await _context.usuario
                 .AnyAsync(u => u.username == username || u.email == email);
+        }
+
+        public async Task<bool> ExisteUsernameOEmailIgnorandoFiltrosAsync(string username, string email)
+        {
+            return await _context.usuario
+                .IgnoreQueryFilters()
+                .AnyAsync(u => u.username == username || u.email == email);
+        }
+
+        public async Task<bool> ExistenRolesActivosAsync(List<int> rolesIds)
+        {
+            if (rolesIds == null || rolesIds.Count == 0)
+                return false;
+
+            var idsUnicos = rolesIds.Distinct().ToList();
+
+            var rolesValidosCount = await _context.rol
+                .Where(r => r.activo && idsUnicos.Contains(r.id))
+                .CountAsync();
+
+            return rolesValidosCount == idsUnicos.Count;
         }
 
         public async Task CrearAsync(usuario entidad, List<int> roles_ids)
@@ -49,7 +78,7 @@ namespace mapa_conocimiento_api.Repositorios
                 await _context.SaveChangesAsync(); // Se guarda para obtener el ID generado
 
                 // Insertamos en la tabla puente los roles asignados
-                foreach (var rolId in roles_ids)
+                foreach (var rolId in roles_ids.Distinct())
                 {
                     var rolUsuario = new rol_usuario
                     {
@@ -77,6 +106,11 @@ namespace mapa_conocimiento_api.Repositorios
             {
                 entidad.activo = false;
                 entidad.fecha_actualizacion = DateTime.UtcNow;
+
+                // Cascada lógica sobre la tabla puente rol_usuario
+                var rolUsuarioRelaciones = await _context.rol_usuario.Where(ru => ru.usuario_id == id).ToListAsync();
+                foreach (var ru in rolUsuarioRelaciones) ru.activo = false;
+
                 await _context.SaveChangesAsync();
             }
         }

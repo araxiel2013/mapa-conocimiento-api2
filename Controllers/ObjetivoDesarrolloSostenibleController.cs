@@ -32,7 +32,7 @@ namespace mapa_conocimiento_api.Controllers
             var resultado = await _servicio.ObtenerPorIdAsync(id);
             if (resultado == null) 
             {
-                return NotFound(new { mensaje = "El ODS no fue encontrado." }); 
+                return NotFound(new { estado = 404, mensaje = "El ODS no fue encontrado." }); 
             }
             return Ok(resultado); 
         }
@@ -41,20 +41,34 @@ namespace mapa_conocimiento_api.Controllers
         [HttpPost]
         public async Task<IActionResult> Crear([FromBody] ObjetivoDesarrolloSostenibleCrear peticion)
         {
-            var nuevaEntidad = await _servicio.CrearAsync(peticion);
-            return CreatedAtAction(nameof(ObtenerPorId), new { id = nuevaEntidad.id }, nuevaEntidad);
+            try
+            {
+                var nuevaEntidad = await _servicio.CrearAsync(peticion);
+                return CreatedAtAction(nameof(ObtenerPorId), new { id = nuevaEntidad.id }, nuevaEntidad);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new { estado = 400, mensaje = ex.Message });
+            }
         }
 
         // PUT: api/ObjetivoDesarrolloSostenible/5
         [HttpPut("{id}")]
         public async Task<IActionResult> Actualizar(int id, [FromBody] ObjetivoDesarrolloSostenibleEditar peticion)
         {
-            var fueActualizado = await _servicio.ActualizarAsync(id, peticion);
-            if (!fueActualizado) 
+            try
             {
-                return NotFound(new { mensaje = "El ODS no fue encontrado para actualizar." }); 
+                var fueActualizado = await _servicio.ActualizarAsync(id, peticion);
+                if (!fueActualizado) 
+                {
+                    return NotFound(new { estado = 404, mensaje = "El ODS no fue encontrado para actualizar." }); 
+                }
+                return Ok(new { mensaje = "ODS actualizado correctamente." }); 
             }
-            return Ok(new { mensaje = "ODS actualizado correctamente." }); 
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new { estado = 400, mensaje = ex.Message });
+            }
         }
 
         // DELETE: api/ObjetivoDesarrolloSostenible/5
@@ -64,7 +78,7 @@ namespace mapa_conocimiento_api.Controllers
             var fueEliminado = await _servicio.EliminarAsync(id);
             if (!fueEliminado) 
             {
-                return NotFound(new { mensaje = "El ODS no fue encontrado para eliminar." }); 
+                return NotFound(new { estado = 404, mensaje = "El ODS no fue encontrado para eliminar." }); 
             }
             return Ok(new { mensaje = "ODS eliminado correctamente." }); 
         }

@@ -46,8 +46,8 @@ namespace mapa_conocimiento_api.Peticiones
         [Required(ErrorMessage = "La convocatoria Minciencias es obligatoria.")]
         public required string conv_minciencia { get; set; }
 
-        public string? nacionalidad { get; set; }
-        public string? nacionalidaad { get; set; }
+        [Required(ErrorMessage = "La nacionalidad es obligatoria.")]
+        public required string nacionalidad { get; set; }
 
         public int? linea_investigacion_principal { get; set; }
     }

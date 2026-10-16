@@ -6,6 +6,7 @@ namespace mapa_conocimiento_api.Repositorios
     {
         Task<IEnumerable<docente>> ObtenerTodosAsync();
         Task<docente?> ObtenerPorIdAsync(int cedula);
+        Task<docente?> ObtenerPorCedulaOCorreoIgnorandoFiltrosAsync(int cedula, string correo);
         Task CrearAsync(docente entidad);
         Task ActualizarAsync(docente entidad);
         Task EliminarAsync(int cedula);
