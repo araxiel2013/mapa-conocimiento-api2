@@ -21,6 +21,11 @@ export default function FormProyecto() {
 
   const manejarEnvio = async (e) => {
     e.preventDefault();
+    if (!datos.titulo.trim() || !datos.resumen.trim() || !datos.presupuesto || !datos.tipo_financiacion.trim() || !datos.tipo_fondos.trim() || !datos.fecha_inicio) {
+      setMensaje({ texto: 'Por favor, complete todos los campos obligatorios.', tipo: 'error' });
+      return;
+    }
+
     setMensaje({ texto: 'Guardando...', tipo: 'exito' });
     try {
       const payload = {
@@ -74,6 +79,32 @@ export default function FormProyecto() {
         onChange={handleChange}
         placeholder="Ej. Interna / Externa"
         isValid={datos.tipo_financiacion.length > 0}
+      />
+      <InputInstitucional 
+        label="5. Tipo de Fondos"
+        name="tipo_fondos"
+        value={datos.tipo_fondos}
+        onChange={handleChange}
+        placeholder="Ej. Convocatoria Interna / MinCiencias"
+        isValid={datos.tipo_fondos.length > 0}
+      />
+      <InputInstitucional 
+        label="6. Fecha de Inicio"
+        name="fecha_inicio"
+        type="date"
+        value={datos.fecha_inicio}
+        onChange={handleChange}
+        placeholder="YYYY-MM-DD"
+        isValid={Boolean(datos.fecha_inicio)}
+      />
+      <InputInstitucional 
+        label="7. Fecha de Fin (Opcional)"
+        name="fecha_fin"
+        type="date"
+        value={datos.fecha_fin}
+        onChange={handleChange}
+        placeholder="YYYY-MM-DD"
+        isValid={Boolean(datos.fecha_fin)}
       />
 
       {mensaje.texto && (
