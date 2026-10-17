@@ -1,5 +1,6 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import InputInstitucional from '../ui/InputInstitucional';
+import api from '../../api/axiosConfig';
 
 
 export default function FormAliado() {
@@ -23,33 +24,28 @@ export default function FormAliado() {
     setMensaje({ texto: '', tipo: '' });
 
     try {
-      const respuesta = await fetch('http://localhost:5000/api/Aliado', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-          nit: parseInt(nit), 
-          razon_social: razonSocial, 
-          nombre_contacto: nombreContacto,
-          correo: correo,
-          telefono: telefono,
-          ciudad: ciudad
-        }) 
+      const respuesta = await api.post('/Aliado', { 
+        nit: parseInt(nit), 
+        razon_social: razonSocial, 
+        nombre_contacto: nombreContacto,
+        correo: correo,
+        telefono: telefono,
+        ciudad: ciudad
       });
 
-      if (respuesta.ok) {
-        const datos = await respuesta.json();
-        setMensaje({ texto: `¡Guardado con éxito! NIT/ID: ${datos.nit || nit}`, tipo: 'exito' });
-        setNit('');
-        setRazonSocial('');
-        setNombreContacto('');
-        setCorreo('');
-        setTelefono('');
-        setCiudad('');
-      } else {
-        setMensaje({ texto: 'Hubo un error al guardar los datos.', tipo: 'error' });
-      }
+      const datos = respuesta.data;
+      setMensaje({ texto: `¡Guardado con éxito! NIT/ID: ${datos.nit || nit}`, tipo: 'exito' });
+      setNit('');
+      setRazonSocial('');
+      setNombreContacto('');
+      setCorreo('');
+      setTelefono('');
+      setCiudad('');
     } catch (error) {
-      setMensaje({ texto: 'Error de conexión con el servidor.', tipo: 'error' });
+      setMensaje({ 
+        texto: error.response?.data?.mensaje || 'Hubo un error al guardar los datos.', 
+        tipo: 'error' 
+      });
     } finally {
       setCargando(false);
     }

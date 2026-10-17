@@ -30,7 +30,7 @@ function App() {
         <Route 
           path="/usuarios" 
           element={
-            <ProtectedRoute>
+            <ProtectedRoute role="Administrador">
               <div className="min-h-screen bg-gris-2 flex flex-col">
                 <Navbar />
                 <PanelUsuarios />

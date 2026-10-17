@@ -1,5 +1,6 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import InputInstitucional from '../ui/InputInstitucional';
+import api from '../../api/axiosConfig';
 
 
 export default function FormTerminoClave() {
@@ -17,20 +18,15 @@ export default function FormTerminoClave() {
     setMensaje({ texto: '', tipo: '' });
 
     try {
-      const respuesta = await fetch('http://localhost:5000/api/TerminoClave', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ termino }) 
-      });
+      await api.post('/TerminoClave', { termino });
 
-      if (respuesta.ok) {
-        setMensaje({ texto: `¡Guardado con éxito!`, tipo: 'exito' });
-        setTermino('');
-      } else {
-        setMensaje({ texto: 'Hubo un error al guardar los datos.', tipo: 'error' });
-      }
+      setMensaje({ texto: `¡Guardado con éxito!`, tipo: 'exito' });
+      setTermino('');
     } catch (error) {
-      setMensaje({ texto: 'Error de conexión con el servidor.', tipo: 'error' });
+      setMensaje({ 
+        texto: error.response?.data?.mensaje || 'Hubo un error al guardar los datos.', 
+        tipo: 'error' 
+      });
     } finally {
       setCargando(false);
     }
