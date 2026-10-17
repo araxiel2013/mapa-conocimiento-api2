@@ -1,7 +1,7 @@
 import React from 'react';
 import { CheckCircle2, XCircle } from 'lucide-react';
 
-export default function InputInstitucional({ label, name, value, onChange, placeholder, isValid, hasError }) {
+export default function InputInstitucional({ label, name, value, onChange, placeholder, isValid, hasError, type = 'text' }) {
   return (
     <div className="flex flex-col mb-8 font-sans w-full max-w-[800px]">
       <label 
@@ -13,7 +13,7 @@ export default function InputInstitucional({ label, name, value, onChange, place
       
       <div className="relative flex items-center">
         <input
-          type="text"
+          type={type}
           id={name}
           name={name}
           value={value}

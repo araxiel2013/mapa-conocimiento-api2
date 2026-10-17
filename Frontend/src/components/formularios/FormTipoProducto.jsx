@@ -1,38 +1,38 @@
 import React, { useState } from 'react';
 import InputInstitucional from '../ui/InputInstitucional';
+import api from '../../api/axiosConfig';
 
 export default function FormTipoProducto() {
+  const [categoria, setCategoria] = useState('');
+  const [clase, setClase] = useState('');
   const [nombre, setNombre] = useState('');
-  const [descripcion, setDescripcion] = useState('');
+  const [tipologia, setTipologia] = useState('');
   
   const [cargando, setCargando] = useState(false);
   const [mensaje, setMensaje] = useState({ texto: '', tipo: '' });
 
   const manejarEnvio = async (e) => {
     e.preventDefault();
-    if (!nombre.trim()) {
-      setMensaje({ texto: 'Por favor, ingrese el nombre.', tipo: 'error' });
+    if (!categoria.trim() || !clase.trim() || !nombre.trim() || !tipologia.trim()) {
+      setMensaje({ texto: 'Por favor, complete todos los campos requeridos.', tipo: 'error' });
       return;
     }
     setCargando(true);
     setMensaje({ texto: '', tipo: '' });
 
     try {
-      const respuesta = await fetch('http://localhost:5000/api/TipoProducto', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ nombre, descripcion }) 
-      });
+      await api.post('/TipoProducto', { categoria, clase, nombre, tipologia });
 
-      if (respuesta.ok) {
-        setMensaje({ texto: '¡Guardado con éxito!', tipo: 'exito' });
-        setNombre('');
-        setDescripcion('');
-      } else {
-        setMensaje({ texto: 'Hubo un error al guardar los datos.', tipo: 'error' });
-      }
+      setMensaje({ texto: '¡Guardado con éxito!', tipo: 'exito' });
+      setCategoria('');
+      setClase('');
+      setNombre('');
+      setTipologia('');
     } catch (error) {
-      setMensaje({ texto: 'Error de conexión con el servidor.', tipo: 'error' });
+      setMensaje({ 
+        texto: error.response?.data?.mensaje || 'Hubo un error al guardar los datos.', 
+        tipo: 'error' 
+      });
     } finally {
       setCargando(false);
     }
@@ -41,20 +41,36 @@ export default function FormTipoProducto() {
   return (
     <form onSubmit={manejarEnvio} className="flex flex-col h-full w-full">
       <InputInstitucional 
-        label="1. Nombre del Tipo de Producto"
+        label="1. Categoría"
+        name="categoria"
+        value={categoria}
+        onChange={(e) => setCategoria(e.target.value)}
+        placeholder="Ej. Generación de Nuevo Conocimiento"
+        isValid={categoria.trim().length > 2}
+      />
+      <InputInstitucional 
+        label="2. Clase"
+        name="clase"
+        value={clase}
+        onChange={(e) => setClase(e.target.value)}
+        placeholder="Ej. Artículos de investigación"
+        isValid={clase.trim().length > 2}
+      />
+      <InputInstitucional 
+        label="3. Nombre del Tipo de Producto"
         name="nombre"
         value={nombre}
         onChange={(e) => setNombre(e.target.value)}
-        placeholder="Ej. Artículo, Libro..."
-        isValid={nombre.length > 2}
+        placeholder="Ej. Artículo en revista indexada"
+        isValid={nombre.trim().length > 2}
       />
       <InputInstitucional 
-        label="2. Descripción"
-        name="descripcion"
-        value={descripcion}
-        onChange={(e) => setDescripcion(e.target.value)}
-        placeholder="Breve descripción"
-        isValid={descripcion.length > 5}
+        label="4. Tipología"
+        name="tipologia"
+        value={tipologia}
+        onChange={(e) => setTipologia(e.target.value)}
+        placeholder="Ej. A1, A, B o Tipología I"
+        isValid={tipologia.trim().length > 0}
       />
 
       {mensaje.texto && (

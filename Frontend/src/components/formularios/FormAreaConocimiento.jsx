@@ -1,5 +1,6 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import InputInstitucional from '../ui/InputInstitucional';
+import api from '../../api/axiosConfig';
 
 export default function FormAreaConocimiento() {
   const [granArea, setGranArea] = useState('');
@@ -17,19 +18,14 @@ export default function FormAreaConocimiento() {
     setCargando(true);
     setMensaje({ texto: '', tipo: '' });
     try {
-      const respuesta = await fetch('http://localhost:5000/api/AreaConocimiento', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ gran_area: granArea, area: area, disciplina: disciplina }) 
-      });
-      if (respuesta.ok) {
-        setMensaje({ texto: `¡Guardado con éxito!`, tipo: 'exito' });
-        setGranArea(''); setArea(''); setDisciplina('');
-      } else {
-        setMensaje({ texto: 'Hubo un error al guardar los datos.', tipo: 'error' });
-      }
+      await api.post('/AreaConocimiento', { gran_area: granArea, area: area, disciplina: disciplina });
+      setMensaje({ texto: `¡Guardado con éxito!`, tipo: 'exito' });
+      setGranArea(''); setArea(''); setDisciplina('');
     } catch (error) {
-      setMensaje({ texto: 'Error de conexión con el servidor.', tipo: 'error' });
+      setMensaje({ 
+        texto: error.response?.data?.mensaje || 'Hubo un error al guardar los datos.', 
+        tipo: 'error' 
+      });
     } finally {
       setCargando(false);
     }

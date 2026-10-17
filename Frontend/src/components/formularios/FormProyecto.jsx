@@ -1,5 +1,6 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import InputInstitucional from '../ui/InputInstitucional';
+import api from '../../api/axiosConfig';
 
 export default function FormProyecto() {
   const [datos, setDatos] = useState({
@@ -20,6 +21,11 @@ export default function FormProyecto() {
 
   const manejarEnvio = async (e) => {
     e.preventDefault();
+    if (!datos.titulo.trim() || !datos.resumen.trim() || !datos.presupuesto || !datos.tipo_financiacion.trim() || !datos.tipo_fondos.trim() || !datos.fecha_inicio) {
+      setMensaje({ texto: 'Por favor, complete todos los campos obligatorios.', tipo: 'error' });
+      return;
+    }
+
     setMensaje({ texto: 'Guardando...', tipo: 'exito' });
     try {
       const payload = {
@@ -29,19 +35,14 @@ export default function FormProyecto() {
         fecha_fin: datos.fecha_fin ? new Date(datos.fecha_fin).toISOString() : null,
       };
 
-      const respuesta = await fetch('http://localhost:5000/api/proyecto', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      });
-      if (respuesta.ok) {
-        setMensaje({ texto: '¡Guardado con éxito!', tipo: 'exito' });
-        setDatos({ titulo: '', resumen: '', presupuesto: '', tipo_financiacion: '', tipo_fondos: '', fecha_inicio: '', fecha_fin: '' });
-      } else {
-        setMensaje({ texto: 'Hubo un error.', tipo: 'error' });
-      }
+      await api.post('/proyecto', payload);
+      setMensaje({ texto: '¡Guardado con éxito!', tipo: 'exito' });
+      setDatos({ titulo: '', resumen: '', presupuesto: '', tipo_financiacion: '', tipo_fondos: '', fecha_inicio: '', fecha_fin: '' });
     } catch (error) {
-      setMensaje({ texto: 'Error de conexión.', tipo: 'error' });
+      setMensaje({ 
+        texto: error.response?.data?.mensaje || 'Hubo un error al guardar el proyecto.', 
+        tipo: 'error' 
+      });
     }
   };
 
@@ -78,6 +79,32 @@ export default function FormProyecto() {
         onChange={handleChange}
         placeholder="Ej. Interna / Externa"
         isValid={datos.tipo_financiacion.length > 0}
+      />
+      <InputInstitucional 
+        label="5. Tipo de Fondos"
+        name="tipo_fondos"
+        value={datos.tipo_fondos}
+        onChange={handleChange}
+        placeholder="Ej. Convocatoria Interna / MinCiencias"
+        isValid={datos.tipo_fondos.length > 0}
+      />
+      <InputInstitucional 
+        label="6. Fecha de Inicio"
+        name="fecha_inicio"
+        type="date"
+        value={datos.fecha_inicio}
+        onChange={handleChange}
+        placeholder="YYYY-MM-DD"
+        isValid={Boolean(datos.fecha_inicio)}
+      />
+      <InputInstitucional 
+        label="7. Fecha de Fin (Opcional)"
+        name="fecha_fin"
+        type="date"
+        value={datos.fecha_fin}
+        onChange={handleChange}
+        placeholder="YYYY-MM-DD"
+        isValid={Boolean(datos.fecha_fin)}
       />
 
       {mensaje.texto && (

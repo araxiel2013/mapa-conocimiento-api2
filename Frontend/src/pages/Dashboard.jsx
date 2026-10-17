@@ -10,6 +10,9 @@ import FormLineaInvestigacion from '../components/formularios/FormLineaInvestiga
 import FormAliado from '../components/formularios/FormAliado';
 import FormProyecto from '../components/formularios/FormProyecto';
 import FormTipoProducto from '../components/formularios/FormTipoProducto';
+import FormDocente from '../components/formularios/FormDocente';
+import FormProducto from '../components/formularios/FormProducto';
+import FormTablasPuente from '../components/formularios/FormTablasPuente';
 
 const modulos = [
   { id: 'proyecto', label: 'Datos Básicos (Proyecto)' },
@@ -20,6 +23,9 @@ const modulos = [
   { id: 'lineaInvestigacion', label: 'Líneas de Investigación' },
   { id: 'tipoProducto', label: 'Tipos de Producto' },
   { id: 'aliado', label: 'Aliados' },
+  { id: 'docente', label: 'Docentes (Fase 2)' },
+  { id: 'producto', label: 'Productos (Fase 2)' },
+  { id: 'tablasPuente', label: 'Tablas Puente / Asociaciones' },
 ];
 
 export default function Dashboard() {
@@ -35,6 +41,9 @@ export default function Dashboard() {
       case 'lineaInvestigacion': return <FormLineaInvestigacion />;
       case 'tipoProducto': return <FormTipoProducto />;
       case 'aliado': return <FormAliado />;
+      case 'docente': return <FormDocente />;
+      case 'producto': return <FormProducto />;
+      case 'tablasPuente': return <FormTablasPuente />;
       default: return <div className="text-xl">Seleccione un módulo</div>;
     }
   };

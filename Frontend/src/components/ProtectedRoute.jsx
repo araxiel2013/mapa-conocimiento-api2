@@ -2,8 +2,8 @@ import React, { useContext } from 'react';
 import { Navigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 
-const ProtectedRoute = ({ children }) => {
-    const { isAuthenticated, loading } = useContext(AuthContext);
+const ProtectedRoute = ({ children, role, allowedRoles = [] }) => {
+    const { isAuthenticated, user, loading } = useContext(AuthContext);
 
     // Mientras el AuthContext revisa el localStorage, mostramos un mensaje de espera
     if (loading) {
@@ -15,7 +15,21 @@ const ProtectedRoute = ({ children }) => {
         return <Navigate to="/login" replace />;
     }
 
-    // Si tiene token, renderizamos la pantalla que pidió
+    // Unificación de roles requeridos (soporta prop 'role' o 'allowedRoles')
+    const rolesRequeridos = [
+        ...(role ? [role] : []),
+        ...(Array.isArray(allowedRoles) ? allowedRoles : [allowedRoles])
+    ].filter(Boolean);
+
+    // Si la ruta exige roles específicos, comprobamos si el usuario posee al menos uno
+    if (rolesRequeridos.length > 0) {
+        const tienePermiso = rolesRequeridos.some((r) => user?.roles?.includes(r));
+        if (!tienePermiso) {
+            return <Navigate to="/dashboard" replace />;
+        }
+    }
+
+    // Si tiene sesión y roles válidos, renderizamos la pantalla
     return children;
 };
 
