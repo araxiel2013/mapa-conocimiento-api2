@@ -3,7 +3,6 @@ using mapa_conocimiento_api.Models;
 
 namespace mapa_conocimiento_api.Repositorios
 {
-    // Implementación del acceso a datos para termino_clave usando EF Core
     public class TerminoClaveRepository : ITerminoClaveRepository
     {
         private readonly postgresContext _context;
@@ -13,19 +12,19 @@ namespace mapa_conocimiento_api.Repositorios
             _context = context;
         }
 
-        public async Task<IEnumerable<termino_clave>> ObtenerTodosAsync()
+        public async Task<IEnumerable<TerminoClave>> ObtenerTodosAsync()
         {
             return await _context.termino_clave.ToListAsync();
         }
 
-        public async Task<termino_clave?> ObtenerPorIdAsync(string termino)
+        public async Task<TerminoClave?> ObtenerPorIdAsync(string termino)
         {
             var terminoNormalizado = termino.Trim();
             return await _context.termino_clave
                 .FirstOrDefaultAsync(t => t.termino.ToLower() == terminoNormalizado.ToLower());
         }
 
-        public async Task CrearAsync(termino_clave entidad)
+        public async Task CrearAsync(TerminoClave entidad)
         {
             var terminoNormalizado = entidad.termino.Trim();
             var existente = await _context.termino_clave
@@ -39,14 +38,13 @@ namespace mapa_conocimiento_api.Repositorios
                     throw new ArgumentException($"Ya existe el término clave '{entidad.termino}'.");
                 }
 
-                // Reactivación si estaba previamente inactivado (borrado lógico)
                 existente.activo = true;
                 await _context.SaveChangesAsync();
                 return;
             }
 
             entidad.termino = terminoNormalizado;
-            entidad.activo = true; // El registro nace activo
+            entidad.activo = true;
             await _context.termino_clave.AddAsync(entidad);
             await _context.SaveChangesAsync();
         }
@@ -58,7 +56,6 @@ namespace mapa_conocimiento_api.Repositorios
                 .FirstOrDefaultAsync(t => t.termino.ToLower() == terminoNormalizado.ToLower());
             if (entidad != null)
             {
-                // Aplicamos el borrado lógico
                 entidad.activo = false;
                 await _context.SaveChangesAsync();
             }

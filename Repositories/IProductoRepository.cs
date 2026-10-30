@@ -4,10 +4,10 @@ namespace mapa_conocimiento_api.Repositorios
 {
     public interface IProductoRepository
     {
-        Task<IEnumerable<producto>> ObtenerTodosAsync();
-        Task<producto?> ObtenerPorIdAsync(int id);
-        Task CrearAsync(producto entidad);
-        Task ActualizarAsync(producto entidad);
+        Task<IEnumerable<Producto>> ObtenerTodosAsync();
+        Task<Producto?> ObtenerPorIdAsync(int id);
+        Task CrearAsync(Producto entidad);
+        Task ActualizarAsync(Producto entidad);
         Task EliminarAsync(int id);
     }
 }

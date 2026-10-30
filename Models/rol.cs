@@ -1,8 +1,12 @@
+using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace mapa_conocimiento_api.Models
 {
-    public class rol
+    [Table("rol")]
+    public class Rol
     {
         [Key]
         public int id { get; set; }
@@ -12,6 +16,6 @@ namespace mapa_conocimiento_api.Models
         public DateTime fecha_creacion { get; set; }
 
         // Propiedad de navegación inversa
-        public virtual ICollection<rol_usuario> RolesUsuario { get; set; } = new List<rol_usuario>();
+        public virtual ICollection<RolUsuario> RolesUsuario { get; set; } = new List<RolUsuario>();
     }
 }

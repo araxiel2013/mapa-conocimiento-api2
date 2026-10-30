@@ -1,3 +1,5 @@
+using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using mapa_conocimiento_api.Peticiones;
@@ -22,7 +24,7 @@ namespace mapa_conocimiento_api.Controllers
         public async Task<IActionResult> ObtenerTodos()
         {
             var resultados = await _servicio.ObtenerTodosAsync();
-            return Ok(resultados);
+            return Ok(new { tabla = "aliado", total = resultados.Count(), datos = resultados });
         }
 
         // GET: api/Aliado/900123456
@@ -44,8 +46,7 @@ namespace mapa_conocimiento_api.Controllers
             try
             {
                 var nuevaEntidad = await _servicio.CrearAsync(peticion);
-                // Retornamos la URL apuntando al parámetro 'nit'
-                return CreatedAtAction(nameof(ObtenerPorId), new { nit = nuevaEntidad.nit }, nuevaEntidad);
+                return CreatedAtAction(nameof(ObtenerPorId), new { nit = nuevaEntidad.nit }, new { estado = 201, mensaje = "Aliado creado exitosamente.", datos = nuevaEntidad });
             }
             catch (ArgumentException ex)
             {
@@ -64,7 +65,7 @@ namespace mapa_conocimiento_api.Controllers
                 {
                     return NotFound(new { estado = 404, mensaje = "El aliado no fue encontrado para actualizar." });
                 }
-                return Ok(new { mensaje = "Aliado actualizado correctamente." });
+                return Ok(new { estado = 200, mensaje = "Aliado actualizado correctamente." });
             }
             catch (ArgumentException ex)
             {
@@ -81,7 +82,7 @@ namespace mapa_conocimiento_api.Controllers
             {
                 return NotFound(new { estado = 404, mensaje = "El aliado no fue encontrado para eliminar." });
             }
-            return Ok(new { mensaje = "Aliado eliminado correctamente." });
+            return Ok(new { estado = 200, mensaje = "Aliado eliminado correctamente (borrado lógico)." });
         }
     }
 }

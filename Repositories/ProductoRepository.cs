@@ -12,16 +12,15 @@ namespace mapa_conocimiento_api.Repositorios
             _context = context;
         }
 
-        public async Task<IEnumerable<producto>> ObtenerTodosAsync()
+        public async Task<IEnumerable<Producto>> ObtenerTodosAsync()
         {
-            // CRÍTICO FASE 2: Eager Loading para las dos llaves foráneas
             return await _context.producto
                 .Include(p => p.ProyectoRelacionado)
                 .Include(p => p.TipoProductoRelacionado)
                 .ToListAsync();
         }
 
-        public async Task<producto?> ObtenerPorIdAsync(int id)
+        public async Task<Producto?> ObtenerPorIdAsync(int id)
         {
             return await _context.producto
                 .Include(p => p.ProyectoRelacionado)
@@ -29,7 +28,7 @@ namespace mapa_conocimiento_api.Repositorios
                 .FirstOrDefaultAsync(p => p.id == id);
         }
 
-        public async Task CrearAsync(producto entidad)
+        public async Task CrearAsync(Producto entidad)
         {
             var nombreNormalizado = entidad.nombre.Trim();
             var existente = await _context.producto
@@ -44,7 +43,6 @@ namespace mapa_conocimiento_api.Repositorios
                     throw new ArgumentException($"Ya existe un producto con el nombre '{entidad.nombre}'.");
                 }
 
-                // Reactivación si estaba previamente inactivado (borrado lógico)
                 existente.nombre = nombreNormalizado;
                 existente.categoria = entidad.categoria;
                 existente.fecha_entrega = entidad.fecha_entrega;
@@ -62,7 +60,7 @@ namespace mapa_conocimiento_api.Repositorios
             await _context.SaveChangesAsync();
         }
 
-        public async Task ActualizarAsync(producto entidad)
+        public async Task ActualizarAsync(Producto entidad)
         {
             _context.producto.Update(entidad);
             await _context.SaveChangesAsync();
@@ -75,7 +73,6 @@ namespace mapa_conocimiento_api.Repositorios
             {
                 entidad.activo = false;
 
-                // Cascada lógica sobre la tabla puente docente_producto
                 var docenteProductoRelaciones = await _context.docente_producto.Where(dp => dp.producto == id).ToListAsync();
                 foreach (var dp in docenteProductoRelaciones) dp.activo = false;
 

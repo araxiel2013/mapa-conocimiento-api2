@@ -12,22 +12,21 @@ namespace mapa_conocimiento_api.Repositorios
             _context = context;
         }
 
-        public async Task<IEnumerable<docente>> ObtenerTodosAsync()
+        public async Task<IEnumerable<Docente>> ObtenerTodosAsync()
         {
-            // CRÍTICO FASE 2: Eager Loading usando .Include() para traer los datos relacionales
             return await _context.docente
                 .Include(d => d.LineaInvestigacionRelacionada)
                 .ToListAsync();
         }
 
-        public async Task<docente?> ObtenerPorIdAsync(int cedula)
+        public async Task<Docente?> ObtenerPorIdAsync(int cedula)
         {
             return await _context.docente
                 .Include(d => d.LineaInvestigacionRelacionada)
                 .FirstOrDefaultAsync(d => d.cedula == cedula);
         }
 
-        public async Task<docente?> ObtenerPorCedulaOCorreoIgnorandoFiltrosAsync(int cedula, string correo)
+        public async Task<Docente?> ObtenerPorCedulaOCorreoIgnorandoFiltrosAsync(int cedula, string correo)
         {
             return await _context.docente
                 .IgnoreQueryFilters()
@@ -35,7 +34,7 @@ namespace mapa_conocimiento_api.Repositorios
                 .FirstOrDefaultAsync(d => d.cedula == cedula || d.correo == correo);
         }
 
-        public async Task CrearAsync(docente entidad)
+        public async Task CrearAsync(Docente entidad)
         {
             var existente = await _context.docente
                 .IgnoreQueryFilters()
@@ -55,10 +54,8 @@ namespace mapa_conocimiento_api.Repositorios
                     }
                 }
 
-                // Si coincide en cédula, reactivamos y actualizamos los datos
                 if (existente.cedula == entidad.cedula)
                 {
-                    // Si el correo ingresado cambió respecto al registro inactivo, validar que no esté en uso por otro docente
                     if (existente.correo != entidad.correo)
                     {
                         var correoEnUso = await _context.docente
@@ -70,7 +67,6 @@ namespace mapa_conocimiento_api.Repositorios
                         }
                     }
 
-                    // Reactivación si estaba previamente inactivado (borrado lógico)
                     existente.nombres = entidad.nombres;
                     existente.apellidos = entidad.apellidos;
                     existente.genero = entidad.genero;
@@ -92,7 +88,6 @@ namespace mapa_conocimiento_api.Repositorios
                 }
                 else
                 {
-                    // El correo pertenece a un docente inactivo con diferente cédula
                     throw new ArgumentException($"El correo {entidad.correo} pertenece a un docente inactivo en el sistema.");
                 }
             }
@@ -102,7 +97,7 @@ namespace mapa_conocimiento_api.Repositorios
             await _context.SaveChangesAsync();
         }
 
-        public async Task ActualizarAsync(docente entidad)
+        public async Task ActualizarAsync(Docente entidad)
         {
             _context.docente.Update(entidad);
             await _context.SaveChangesAsync();
@@ -115,7 +110,6 @@ namespace mapa_conocimiento_api.Repositorios
             {
                 entidad.activo = false;
 
-                // Cascada lógica sobre las tablas puente asociadas al docente
                 var desarrollaRelaciones = await _context.desarrolla.Where(d => d.docente == cedula).ToListAsync();
                 foreach (var d in desarrollaRelaciones) d.activo = false;
 

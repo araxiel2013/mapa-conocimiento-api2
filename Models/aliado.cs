@@ -1,8 +1,10 @@
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace mapa_conocimiento_api.Models
 {
-    public class aliado
+    [Table("aliado")]
+    public class Aliado
     {
         [Key]
         public int nit { get; set; }

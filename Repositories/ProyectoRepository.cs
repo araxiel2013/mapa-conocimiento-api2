@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using mapa_conocimiento_api.Models;
@@ -14,17 +15,17 @@ namespace mapa_conocimiento_api.Repositorios
             _context = context;
         }
 
-        public async Task<IEnumerable<proyecto>> ObtenerTodosAsync()
+        public async Task<IEnumerable<Proyecto>> ObtenerTodosAsync()
         {
             return await _context.proyecto.ToListAsync();
         }
 
-        public async Task<proyecto?> ObtenerPorIdAsync(int id)
+        public async Task<Proyecto?> ObtenerPorIdAsync(int id)
         {
             return await _context.proyecto.FindAsync(id);
         }
 
-        public async Task CrearAsync(proyecto entidad)
+        public async Task CrearAsync(Proyecto entidad)
         {
             var tituloNormalizado = entidad.titulo.Trim();
             var existente = await _context.proyecto
@@ -39,7 +40,6 @@ namespace mapa_conocimiento_api.Repositorios
                     throw new ArgumentException($"Ya existe un proyecto con el título '{entidad.titulo}'.");
                 }
 
-                // Reactivación si estaba previamente inactivado (borrado lógico)
                 existente.titulo = tituloNormalizado;
                 existente.resumen = entidad.resumen;
                 existente.presupuesto = entidad.presupuesto;
@@ -59,7 +59,7 @@ namespace mapa_conocimiento_api.Repositorios
             await _context.SaveChangesAsync();
         }
 
-        public async Task ActualizarAsync(proyecto entidad)
+        public async Task ActualizarAsync(Proyecto entidad)
         {
             _context.proyecto.Update(entidad);
             await _context.SaveChangesAsync();
@@ -94,9 +94,24 @@ namespace mapa_conocimiento_api.Repositorios
                 var lineaRelaciones = await _context.proyecto_linea.Where(r => r.proyecto == id).ToListAsync();
                 foreach (var r in lineaRelaciones) r.activo = false;
 
+                // Cascada lógica sobre productos vinculados y sus relaciones puente (docente_producto) (ERR-09 / REG-03)
+                var productos = await _context.producto
+                    .Where(p => p.proyecto_id == id && p.activo)
+                    .ToListAsync();
+
+                if (productos.Count > 0)
+                {
+                    var productoIds = productos.Select(p => p.id).ToList();
+                    var docenteProductoRelaciones = await _context.docente_producto
+                        .Where(dp => productoIds.Contains(dp.producto) && dp.activo)
+                        .ToListAsync();
+
+                    foreach (var dp in docenteProductoRelaciones) dp.activo = false;
+                    foreach (var prod in productos) prod.activo = false;
+                }
+
                 await _context.SaveChangesAsync();
             }
         }
     }
 }
-

@@ -10,10 +10,10 @@ namespace mapa_conocimiento_api.Repositorios
         private readonly postgresContext _context;
         public PalabrasClaveRepository(postgresContext context) => _context = context;
 
-        public async Task<palabras_clave?> ObtenerPorIdsAsync(int proyecto_id, string termino_clave) =>
+        public async Task<PalabrasClave?> ObtenerPorIdsAsync(int proyecto_id, string termino_clave) =>
             await _context.palabras_clave.FirstOrDefaultAsync(p => p.proyecto == proyecto_id && p.termino_clave == termino_clave);
 
-        public async Task CrearAsync(palabras_clave entidad)
+        public async Task CrearAsync(PalabrasClave entidad)
         {
             var existente = await _context.palabras_clave
                 .IgnoreQueryFilters()

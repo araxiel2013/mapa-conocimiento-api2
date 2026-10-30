@@ -16,11 +16,11 @@ namespace mapa_conocimiento_api.Servicios
             _repositorio = repositorio;
         }
 
-        public async Task<IEnumerable<proyecto>> ObtenerTodosAsync() => await _repositorio.ObtenerTodosAsync();
+        public async Task<IEnumerable<Proyecto>> ObtenerTodosAsync() => await _repositorio.ObtenerTodosAsync();
 
-        public async Task<proyecto?> ObtenerPorIdAsync(int id) => await _repositorio.ObtenerPorIdAsync(id);
+        public async Task<Proyecto?> ObtenerPorIdAsync(int id) => await _repositorio.ObtenerPorIdAsync(id);
 
-        public async Task<proyecto> CrearAsync(ProyectoCrear peticion)
+        public async Task<Proyecto> CrearAsync(ProyectoCrear peticion)
         {
             if (!peticion.fecha_inicio.HasValue)
                 throw new ArgumentException("La fecha de inicio es obligatoria.");
@@ -38,7 +38,7 @@ namespace mapa_conocimiento_api.Servicios
                 throw new ArgumentException("La fecha de finalización no puede ser anterior a la fecha de inicio.");
             }
 
-            var nuevaEntidad = new proyecto
+            var nuevaEntidad = new Proyecto
             { 
                 titulo = peticion.titulo,
                 resumen = peticion.resumen,

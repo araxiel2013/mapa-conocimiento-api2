@@ -1,3 +1,5 @@
+using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using mapa_conocimiento_api.Peticiones;
@@ -22,7 +24,7 @@ namespace mapa_conocimiento_api.Controllers
         public async Task<IActionResult> ObtenerTodos()
         {
             var resultados = await _servicio.ObtenerTodosAsync();
-            return Ok(resultados);
+            return Ok(new { tabla = "area_aplicacion", total = resultados.Count(), datos = resultados });
         }
 
         // GET: api/AreaAplicacion/5
@@ -44,7 +46,7 @@ namespace mapa_conocimiento_api.Controllers
             try
             {
                 var nuevaEntidad = await _servicio.CrearAsync(peticion);
-                return CreatedAtAction(nameof(ObtenerPorId), new { id = nuevaEntidad.id }, nuevaEntidad);
+                return CreatedAtAction(nameof(ObtenerPorId), new { id = nuevaEntidad.id }, new { estado = 201, mensaje = "Área de aplicación creada exitosamente.", datos = nuevaEntidad });
             }
             catch (ArgumentException ex)
             {
@@ -63,7 +65,7 @@ namespace mapa_conocimiento_api.Controllers
                 {
                     return NotFound(new { estado = 404, mensaje = "El área de aplicación no fue encontrada para actualizar." });
                 }
-                return Ok(new { mensaje = "Área de aplicación actualizada correctamente." });
+                return Ok(new { estado = 200, mensaje = "Área de aplicación actualizada correctamente." });
             }
             catch (ArgumentException ex)
             {
@@ -80,7 +82,7 @@ namespace mapa_conocimiento_api.Controllers
             {
                 return NotFound(new { estado = 404, mensaje = "El área de aplicación no fue encontrada para eliminar." });
             }
-            return Ok(new { mensaje = "Área de aplicación eliminada correctamente." });
+            return Ok(new { estado = 200, mensaje = "Área de aplicación eliminada correctamente (borrado lógico)." });
         }
     }
 }

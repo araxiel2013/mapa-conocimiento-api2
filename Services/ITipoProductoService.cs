@@ -7,11 +7,10 @@ namespace mapa_conocimiento_api.Servicios
 {
     public interface ITipoProductoService
     {
-        Task<IEnumerable<tipo_producto>> ObtenerTodosAsync();
-        Task<tipo_producto?> ObtenerPorIdAsync(int id);
-        Task<tipo_producto> CrearAsync(TipoProductoCrear peticion);
+        Task<IEnumerable<TipoProducto>> ObtenerTodosAsync();
+        Task<TipoProducto?> ObtenerPorIdAsync(int id);
+        Task<TipoProducto> CrearAsync(TipoProductoCrear peticion);
         Task<bool> ActualizarAsync(int id, TipoProductoEditar peticion);
         Task<bool> EliminarAsync(int id);
     }
 }
-

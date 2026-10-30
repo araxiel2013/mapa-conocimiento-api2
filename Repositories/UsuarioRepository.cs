@@ -1,3 +1,7 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using mapa_conocimiento_api.Models;
 
@@ -12,16 +16,15 @@ namespace mapa_conocimiento_api.Repositorios
             _context = context;
         }
 
-        public async Task<IEnumerable<usuario>> ObtenerTodosAsync()
+        public async Task<IEnumerable<Usuario>> ObtenerTodosAsync()
         {
-            // Eager Loading para traernos los roles de cada usuario
             return await _context.usuario
                 .Include(u => u.RolesUsuario)
                     .ThenInclude(ru => ru.RolRelacionado)
                 .ToListAsync();
         }
 
-        public async Task<usuario?> ObtenerPorIdAsync(int id)
+        public async Task<Usuario?> ObtenerPorIdAsync(int id)
         {
             return await _context.usuario
                 .Include(u => u.RolesUsuario)
@@ -29,7 +32,7 @@ namespace mapa_conocimiento_api.Repositorios
                 .FirstOrDefaultAsync(u => u.id == id);
         }
 
-        public async Task<usuario?> ObtenerPorUsernameConRolesAsync(string username)
+        public async Task<Usuario?> ObtenerPorUsernameConRolesAsync(string username)
         {
             return await _context.usuario
                 .Include(u => u.RolesUsuario.Where(ru => ru.activo))
@@ -64,9 +67,8 @@ namespace mapa_conocimiento_api.Repositorios
             return rolesValidosCount == idsUnicos.Count;
         }
 
-        public async Task CrearAsync(usuario entidad, List<int> roles_ids)
+        public async Task CrearAsync(Usuario entidad, List<int> roles_ids)
         {
-            // Iniciamos una transacción porque insertaremos en dos tablas (usuario y rol_usuario)
             using var transaction = await _context.Database.BeginTransactionAsync();
             try
             {
@@ -75,12 +77,11 @@ namespace mapa_conocimiento_api.Repositorios
                 entidad.fecha_actualizacion = DateTime.UtcNow;
 
                 await _context.usuario.AddAsync(entidad);
-                await _context.SaveChangesAsync(); // Se guarda para obtener el ID generado
+                await _context.SaveChangesAsync();
 
-                // Insertamos en la tabla puente los roles asignados
                 foreach (var rolId in roles_ids.Distinct())
                 {
-                    var rolUsuario = new rol_usuario
+                    var rolUsuario = new RolUsuario
                     {
                         usuario_id = entidad.id,
                         rol_id = rolId,
@@ -107,7 +108,6 @@ namespace mapa_conocimiento_api.Repositorios
                 entidad.activo = false;
                 entidad.fecha_actualizacion = DateTime.UtcNow;
 
-                // Cascada lógica sobre la tabla puente rol_usuario
                 var rolUsuarioRelaciones = await _context.rol_usuario.Where(ru => ru.usuario_id == id).ToListAsync();
                 foreach (var ru in rolUsuarioRelaciones) ru.activo = false;
 
