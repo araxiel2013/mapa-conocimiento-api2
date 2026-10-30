@@ -1,0 +1,24 @@
+{
+  "name": "Módulo: Mapa de Conocimiento - USB",
+  "short_name": "MapaConocimiento",
+  "description": "Plataforma Institucional de Inteligencia Investigativa de la Universidad de San Buenaventura",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0D274C",
+  "theme_color": "#0D274C",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/favicon.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
