@@ -28,6 +28,10 @@ export default function FormDocente() {
 
   const manejarEnvio = async (e) => {
     e.preventDefault();
+    if (!datos.nacionalidad || !datos.nacionalidad.trim()) {
+      setMensaje({ texto: 'La nacionalidad del docente es obligatoria.', tipo: 'error' });
+      return;
+    }
     if (
       !datos.cedula ||
       !datos.nombres.trim() ||
@@ -40,7 +44,8 @@ export default function FormDocente() {
       !datos.url_cvlac.trim() ||
       !datos.escalafon.trim() ||
       !datos.perfil.trim() ||
-      !datos.conv_minciencia.trim()
+      !datos.conv_minciencia.trim() ||
+      !datos.nacionalidad.trim()
     ) {
       setMensaje({ texto: 'Por favor, complete todos los campos obligatorios.', tipo: 'error' });
       return;
@@ -51,7 +56,7 @@ export default function FormDocente() {
 
     try {
       const payload = {
-        cedula: parseInt(datos.cedula),
+        cedula: parseInt(datos.cedula, 10),
         nombres: datos.nombres.trim(),
         apellidos: datos.apellidos.trim(),
         genero: datos.genero.trim(),
@@ -63,7 +68,7 @@ export default function FormDocente() {
         escalafon: datos.escalafon.trim(),
         perfil: datos.perfil.trim(),
         conv_minciencia: datos.conv_minciencia.trim(),
-        nacionalidad: datos.nacionalidad.trim() || null
+        nacionalidad: datos.nacionalidad.trim()
       };
 
       const respuesta = await api.post('/Docente', payload);
@@ -211,12 +216,12 @@ export default function FormDocente() {
       />
 
       <InputInstitucional
-        label="13. Nacionalidad (Opcional)"
+        label="13. Nacionalidad *"
         name="nacionalidad"
         value={datos.nacionalidad}
         onChange={handleChange}
         placeholder="Ej. Colombiana"
-        isValid={true}
+        isValid={datos.nacionalidad.trim().length > 2}
       />
 
       {mensaje.texto && (
@@ -231,4 +236,3 @@ export default function FormDocente() {
     </form>
   );
 }
-
