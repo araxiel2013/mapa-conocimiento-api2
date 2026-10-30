@@ -15,17 +15,17 @@ namespace mapa_conocimiento_api.Repositorios
             _context = context;
         }
 
-        public async Task<IEnumerable<proyecto>> ObtenerTodosAsync()
+        public async Task<IEnumerable<Proyecto>> ObtenerTodosAsync()
         {
             return await _context.proyecto.ToListAsync();
         }
 
-        public async Task<proyecto?> ObtenerPorIdAsync(int id)
+        public async Task<Proyecto?> ObtenerPorIdAsync(int id)
         {
             return await _context.proyecto.FindAsync(id);
         }
 
-        public async Task CrearAsync(proyecto entidad)
+        public async Task CrearAsync(Proyecto entidad)
         {
             var tituloNormalizado = entidad.titulo.Trim();
             var existente = await _context.proyecto
@@ -40,7 +40,6 @@ namespace mapa_conocimiento_api.Repositorios
                     throw new ArgumentException($"Ya existe un proyecto con el título '{entidad.titulo}'.");
                 }
 
-                // Reactivación si estaba previamente inactivado (borrado lógico)
                 existente.titulo = tituloNormalizado;
                 existente.resumen = entidad.resumen;
                 existente.presupuesto = entidad.presupuesto;
@@ -60,7 +59,7 @@ namespace mapa_conocimiento_api.Repositorios
             await _context.SaveChangesAsync();
         }
 
-        public async Task ActualizarAsync(proyecto entidad)
+        public async Task ActualizarAsync(Proyecto entidad)
         {
             _context.proyecto.Update(entidad);
             await _context.SaveChangesAsync();

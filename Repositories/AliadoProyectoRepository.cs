@@ -14,13 +14,13 @@ namespace mapa_conocimiento_api.Repositorios
             _context = context;
         }
 
-        public async Task<aliado_proyecto?> ObtenerPorIdsAsync(int aliado_nit, int proyecto_id)
+        public async Task<AliadoProyecto?> ObtenerPorIdsAsync(int aliado_nit, int proyecto_id)
         {
             return await _context.aliado_proyecto
                 .FirstOrDefaultAsync(ap => ap.aliado == aliado_nit && ap.proyecto == proyecto_id);
         }
 
-        public async Task CrearAsync(aliado_proyecto entidad)
+        public async Task CrearAsync(AliadoProyecto entidad)
         {
             var existente = await _context.aliado_proyecto
                 .IgnoreQueryFilters()

@@ -1,3 +1,7 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using mapa_conocimiento_api.Models;
 using mapa_conocimiento_api.Peticiones;
 using mapa_conocimiento_api.Repositorios;
@@ -13,9 +17,8 @@ namespace mapa_conocimiento_api.Servicios
             _repositorio = repositorio;
         }
 
-        private UsuarioResponse MapearAResponse(usuario entidad)
+        private UsuarioResponse MapearAResponse(Usuario entidad)
         {
-            // Extraemos solo los nombres de los roles de la tabla puente
             var roles = entidad.RolesUsuario
                 .Where(ru => ru.RolRelacionado != null)
                 .Select(ru => ru.RolRelacionado!.nombre)
@@ -46,7 +49,6 @@ namespace mapa_conocimiento_api.Servicios
 
         public async Task<UsuarioResponse> CrearAsync(UsuarioCrear peticion)
         {
-            // Validamos si el username o correo ya existen en el sistema (incluyendo borrados lógicos)
             if (await _repositorio.ExisteUsernameOEmailIgnorandoFiltrosAsync(peticion.username, peticion.email))
             {
                 bool estaActivo = await _repositorio.ExisteUsernameOEmailAsync(peticion.username, peticion.email);
@@ -60,16 +62,14 @@ namespace mapa_conocimiento_api.Servicios
                 }
             }
 
-            // Validamos que los roles especificados existan y se encuentren activos
             if (peticion.roles_ids == null || !peticion.roles_ids.Any() || !await _repositorio.ExistenRolesActivosAsync(peticion.roles_ids))
             {
                 throw new ArgumentException("Uno o más roles especificados no existen o están inactivos.");
             }
 
-            var nuevoUsuario = new usuario
+            var nuevoUsuario = new Usuario
             {
                 username = peticion.username,
-                // CRÍTICO FASE 3: Encriptamos la contraseña con BCrypt antes de enviarla al repositorio
                 password = BCrypt.Net.BCrypt.HashPassword(peticion.password),
                 email = peticion.email,
                 nombre_completo = peticion.nombre_completo

@@ -14,13 +14,13 @@ namespace mapa_conocimiento_api.Repositorios
             _context = context;
         }
 
-        public async Task<desarrolla?> ObtenerPorIdsAsync(int docente_cedula, int proyecto_id)
+        public async Task<Desarrolla?> ObtenerPorIdsAsync(int docente_cedula, int proyecto_id)
         {
             return await _context.desarrolla
                 .FirstOrDefaultAsync(d => d.docente == docente_cedula && d.proyecto == proyecto_id);
         }
 
-        public async Task CrearAsync(desarrolla entidad)
+        public async Task CrearAsync(Desarrolla entidad)
         {
             var existente = await _context.desarrolla
                 .IgnoreQueryFilters()

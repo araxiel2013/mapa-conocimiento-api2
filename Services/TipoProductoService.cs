@@ -15,13 +15,13 @@ namespace mapa_conocimiento_api.Servicios
             _repositorio = repositorio;
         }
 
-        public async Task<IEnumerable<tipo_producto>> ObtenerTodosAsync() => await _repositorio.ObtenerTodosAsync();
+        public async Task<IEnumerable<TipoProducto>> ObtenerTodosAsync() => await _repositorio.ObtenerTodosAsync();
 
-        public async Task<tipo_producto?> ObtenerPorIdAsync(int id) => await _repositorio.ObtenerPorIdAsync(id);
+        public async Task<TipoProducto?> ObtenerPorIdAsync(int id) => await _repositorio.ObtenerPorIdAsync(id);
 
-        public async Task<tipo_producto> CrearAsync(TipoProductoCrear peticion)
+        public async Task<TipoProducto> CrearAsync(TipoProductoCrear peticion)
         {
-            var nuevaEntidad = new tipo_producto { 
+            var nuevaEntidad = new TipoProducto { 
                 categoria = peticion.categoria,
                 clase = peticion.clase,
                 nombre = peticion.nombre,
@@ -53,4 +53,3 @@ namespace mapa_conocimiento_api.Servicios
         }
     }
 }
-

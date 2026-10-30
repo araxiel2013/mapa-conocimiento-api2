@@ -4,7 +4,6 @@ using mapa_conocimiento_api.Repositorios;
 
 namespace mapa_conocimiento_api.Servicios
 {
-    // Implementación de las reglas de negocio para termino_clave
     public class TerminoClaveService : ITerminoClaveService
     {
         private readonly ITerminoClaveRepository _repositorio;
@@ -14,25 +13,24 @@ namespace mapa_conocimiento_api.Servicios
             _repositorio = repositorio;
         }
 
-        public async Task<IEnumerable<termino_clave>> ObtenerTodosAsync()
+        public async Task<IEnumerable<TerminoClave>> ObtenerTodosAsync()
         {
             return await _repositorio.ObtenerTodosAsync();
         }
 
-        public async Task<termino_clave?> ObtenerPorIdAsync(string termino)
+        public async Task<TerminoClave?> ObtenerPorIdAsync(string termino)
         {
             return await _repositorio.ObtenerPorIdAsync(termino);
         }
 
-        public async Task<termino_clave> CrearAsync(TerminoClaveCrear peticion)
+        public async Task<TerminoClave> CrearAsync(TerminoClaveCrear peticion)
         {
             if (string.IsNullOrWhiteSpace(peticion.termino))
             {
                 throw new ArgumentException("El campo termino es obligatorio y no puede contener únicamente espacios.");
             }
 
-            // El campo recibido en el DTO se convierte en la llave primaria de la entidad
-            var nuevaEntidad = new termino_clave
+            var nuevaEntidad = new TerminoClave
             {
                 termino = peticion.termino.Trim()
             };
@@ -43,7 +41,6 @@ namespace mapa_conocimiento_api.Servicios
 
         public async Task<bool> EliminarAsync(string termino)
         {
-            // Verificamos si existe buscando por la llave primaria tipo string
             var entidadExistente = await _repositorio.ObtenerPorIdAsync(termino);
             if (entidadExistente == null) 
             {

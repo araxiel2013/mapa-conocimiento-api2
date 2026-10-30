@@ -1,3 +1,5 @@
+using System;
+using System.Threading.Tasks;
 using mapa_conocimiento_api.Models;
 using mapa_conocimiento_api.Peticiones;
 using mapa_conocimiento_api.Repositorios;
@@ -10,7 +12,6 @@ namespace mapa_conocimiento_api.Servicios
         private readonly IAliadoRepository _aliadoRepository;
         private readonly IProyectoRepository _proyectoRepository;
 
-        // Inyectamos los repositorios para validar Integridad Referencial
         public AliadoProyectoService(
             IAliadoProyectoRepository repositorio,
             IAliadoRepository aliadoRepository,
@@ -23,15 +24,13 @@ namespace mapa_conocimiento_api.Servicios
 
         public async Task<bool> CrearAsync(AliadoProyectoCrear peticion)
         {
-            // Validar que el aliado existe
             var aliado = await _aliadoRepository.ObtenerPorIdAsync(peticion.aliado_nit);
             if (aliado == null) throw new ArgumentException("El aliado no existe o está inactivo.");
 
-            // Validar que el proyecto existe
             var proyecto = await _proyectoRepository.ObtenerPorIdAsync(peticion.proyecto_id);
             if (proyecto == null) throw new ArgumentException("El proyecto no existe o está inactivo.");
 
-            var nuevaRelacion = new aliado_proyecto
+            var nuevaRelacion = new AliadoProyecto
             {
                 aliado = peticion.aliado_nit,
                 proyecto = peticion.proyecto_id

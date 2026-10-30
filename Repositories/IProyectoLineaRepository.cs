@@ -5,8 +5,8 @@ namespace mapa_conocimiento_api.Repositorios
 {
     public interface IProyectoLineaRepository
     {
-        Task<proyecto_linea?> ObtenerPorIdsAsync(int proyecto_id, int linea_investigacion_id);
-        Task CrearAsync(proyecto_linea entidad);
+        Task<ProyectoLinea?> ObtenerPorIdsAsync(int proyecto_id, int linea_investigacion_id);
+        Task CrearAsync(ProyectoLinea entidad);
         Task EliminarAsync(int proyecto_id, int linea_investigacion_id);
     }
 }

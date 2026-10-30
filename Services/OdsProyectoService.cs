@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Threading.Tasks;
 using mapa_conocimiento_api.Models;
 using mapa_conocimiento_api.Peticiones;
@@ -22,7 +22,7 @@ namespace mapa_conocimiento_api.Servicios
             if (await _proyectoRepo.ObtenerPorIdAsync(peticion.proyecto_id) == null) throw new ArgumentException("El proyecto no existe.");
             if (await _odsRepo.ObtenerPorIdAsync(peticion.ods_id) == null) throw new ArgumentException("El ODS no existe.");
 
-            await _repositorio.CrearAsync(new ods_proyecto { proyecto = peticion.proyecto_id, ods = peticion.ods_id });
+            await _repositorio.CrearAsync(new OdsProyecto { proyecto = peticion.proyecto_id, ods = peticion.ods_id });
             return true;
         }
 

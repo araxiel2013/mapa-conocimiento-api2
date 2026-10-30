@@ -3,7 +3,6 @@ using mapa_conocimiento_api.Models;
 
 namespace mapa_conocimiento_api.Repositorios
 {
-    // Implementación del acceso a datos para ODS usando EF Core
     public class ObjetivoDesarrolloSostenibleRepository : IObjetivoDesarrolloSostenibleRepository
     {
         private readonly postgresContext _context;
@@ -13,18 +12,17 @@ namespace mapa_conocimiento_api.Repositorios
             _context = context;
         }
 
-        public async Task<IEnumerable<objetivo_desarrollo_sostenible>> ObtenerTodosAsync()
+        public async Task<IEnumerable<ObjetivoDesarrolloSostenible>> ObtenerTodosAsync()
         {
-            // El DbContext filtrará los inactivos automáticamente gracias al HasQueryFilter
             return await _context.objetivo_desarrollo_sostenible.ToListAsync();
         }
 
-        public async Task<objetivo_desarrollo_sostenible?> ObtenerPorIdAsync(int id)
+        public async Task<ObjetivoDesarrolloSostenible?> ObtenerPorIdAsync(int id)
         {
             return await _context.objetivo_desarrollo_sostenible.FindAsync(id);
         }
 
-        public async Task CrearAsync(objetivo_desarrollo_sostenible entidad)
+        public async Task CrearAsync(ObjetivoDesarrolloSostenible entidad)
         {
             var nombreNormalizado = entidad.nombre.Trim();
             var existente = await _context.objetivo_desarrollo_sostenible
@@ -39,7 +37,6 @@ namespace mapa_conocimiento_api.Repositorios
                     throw new ArgumentException($"Ya existe un objetivo de desarrollo sostenible con el nombre '{entidad.nombre}'.");
                 }
 
-                // Reactivación si estaba previamente inactivado (borrado lógico)
                 existente.nombre = nombreNormalizado;
                 existente.categoria = entidad.categoria;
                 existente.activo = true;
@@ -49,12 +46,12 @@ namespace mapa_conocimiento_api.Repositorios
             }
 
             entidad.nombre = nombreNormalizado;
-            entidad.activo = true; // Todo nuevo registro nace activo por defecto
+            entidad.activo = true;
             await _context.objetivo_desarrollo_sostenible.AddAsync(entidad);
             await _context.SaveChangesAsync();
         }
 
-        public async Task ActualizarAsync(objetivo_desarrollo_sostenible entidad)
+        public async Task ActualizarAsync(ObjetivoDesarrolloSostenible entidad)
         {
             _context.objetivo_desarrollo_sostenible.Update(entidad);
             await _context.SaveChangesAsync();
@@ -65,7 +62,6 @@ namespace mapa_conocimiento_api.Repositorios
             var entidad = await _context.objetivo_desarrollo_sostenible.FindAsync(id);
             if (entidad != null)
             {
-                // Aplicamos el borrado lógico
                 entidad.activo = false;
                 await _context.SaveChangesAsync();
             }

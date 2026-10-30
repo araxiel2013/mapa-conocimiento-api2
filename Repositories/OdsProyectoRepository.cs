@@ -10,10 +10,10 @@ namespace mapa_conocimiento_api.Repositorios
         private readonly postgresContext _context;
         public OdsProyectoRepository(postgresContext context) => _context = context;
 
-        public async Task<ods_proyecto?> ObtenerPorIdsAsync(int proyecto_id, int ods_id) =>
+        public async Task<OdsProyecto?> ObtenerPorIdsAsync(int proyecto_id, int ods_id) =>
             await _context.ods_proyecto.FirstOrDefaultAsync(o => o.proyecto == proyecto_id && o.ods == ods_id);
 
-        public async Task CrearAsync(ods_proyecto entidad)
+        public async Task CrearAsync(OdsProyecto entidad)
         {
             var existente = await _context.ods_proyecto
                 .IgnoreQueryFilters()

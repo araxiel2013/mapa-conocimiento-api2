@@ -10,10 +10,10 @@ namespace mapa_conocimiento_api.Repositorios
         private readonly postgresContext _context;
         public DocenteProductoRepository(postgresContext context) => _context = context;
 
-        public async Task<docente_producto?> ObtenerPorIdsAsync(int docente_cedula, int producto_id) =>
+        public async Task<DocenteProducto?> ObtenerPorIdsAsync(int docente_cedula, int producto_id) =>
             await _context.docente_producto.FirstOrDefaultAsync(d => d.docente == docente_cedula && d.producto == producto_id);
 
-        public async Task CrearAsync(docente_producto entidad)
+        public async Task CrearAsync(DocenteProducto entidad)
         {
             var existente = await _context.docente_producto
                 .IgnoreQueryFilters()
