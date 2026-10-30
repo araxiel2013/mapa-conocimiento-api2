@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using mapa_conocimiento_api.Models;
@@ -94,9 +95,24 @@ namespace mapa_conocimiento_api.Repositorios
                 var lineaRelaciones = await _context.proyecto_linea.Where(r => r.proyecto == id).ToListAsync();
                 foreach (var r in lineaRelaciones) r.activo = false;
 
+                // Cascada lógica sobre productos vinculados y sus relaciones puente (docente_producto) (ERR-09 / REG-03)
+                var productos = await _context.producto
+                    .Where(p => p.proyecto_id == id && p.activo)
+                    .ToListAsync();
+
+                if (productos.Count > 0)
+                {
+                    var productoIds = productos.Select(p => p.id).ToList();
+                    var docenteProductoRelaciones = await _context.docente_producto
+                        .Where(dp => productoIds.Contains(dp.producto) && dp.activo)
+                        .ToListAsync();
+
+                    foreach (var dp in docenteProductoRelaciones) dp.activo = false;
+                    foreach (var prod in productos) prod.activo = false;
+                }
+
                 await _context.SaveChangesAsync();
             }
         }
     }
 }
-
