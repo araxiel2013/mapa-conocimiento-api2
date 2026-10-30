@@ -1,5 +1,17 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+
+// Layouts
+import LayoutPublico from './components/layout/LayoutPublico';
+
+// Vistas Públicas Corporativas (Fase 4.3)
+import Inicio from './pages/public/Inicio';
+import Nosotros from './pages/public/Nosotros';
+import Servicios from './pages/public/Servicios';
+import Soporte from './pages/public/Soporte';
+import Contacto from './pages/public/Contacto';
+
+// Autenticación y Módulos Privados Transaccionales
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import PanelUsuarios from './pages/PanelUsuarios';
@@ -10,10 +22,24 @@ function App() {
   return (
     <Router>
       <Routes>
-        {/* Ruta pública de Inicio de Sesión */}
+        {/* =========================================================
+            RUTAS PÚBLICAS CORPORATIVAS (LAYOUT PÚBLICO CON NAVBAR Y FOOTER)
+        ========================================================= */}
+        <Route element={<LayoutPublico />}>
+          <Route path="/" element={<Inicio />} />
+          <Route path="/nosotros" element={<Nosotros />} />
+          <Route path="/servicios" element={<Servicios />} />
+          <Route path="/soporte" element={<Soporte />} />
+          <Route path="/contacto" element={<Contacto />} />
+        </Route>
+
+        {/* Ruta de Inicio de Sesión Institucional */}
         <Route path="/login" element={<Login />} />
 
-        {/* Ruta Protegida: Dashboard con todos los Formularios Multicampus */}
+        {/* =========================================================
+            RUTAS PRIVADAS (TRANSACCIONALES PROTEGIDAS POR TOKEN JWT)
+        ========================================================= */}
+        {/* Tablero de Formularios y Módulos de Investigación */}
         <Route 
           path="/dashboard" 
           element={
@@ -26,7 +52,7 @@ function App() {
           } 
         />
 
-        {/* Ruta Protegida: Panel de Administración de Usuarios (solo Admin) */}
+        {/* Módulo Exclusivo de Administración de Usuarios (RBAC: Solo Administrador) */}
         <Route 
           path="/usuarios" 
           element={
@@ -39,8 +65,8 @@ function App() {
           } 
         />
 
-        {/* Redirección por defecto */}
-        <Route path="*" element={<Navigate to="/dashboard" replace />} />
+        {/* Redirección comodín al portal público */}
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </Router>
   );

@@ -48,7 +48,7 @@ export default function FormAreaAplicacion() {
           {mensaje.texto}
         </p>
       )}
-      <div className="mt-auto pt-10"><button type="submit" className="hidden" id="btn-submit">Guardar</button></div>
+      <div className="mt-auto pt-10"><button type="submit" className="hidden" id="btn-submit" disabled={cargando}>{cargando ? 'Guardando...' : 'Guardar'}</button></div>
     </form>
   );
 }
