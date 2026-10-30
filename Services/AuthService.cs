@@ -50,15 +50,31 @@ namespace mapa_conocimiento_api.Servicios
 
             // 4. Firmamos matemáticamente el Token
             var jwtSettings = _configuration.GetSection("JwtSettings");
-            var secretKey = jwtSettings.GetValue<string>("Key");
+            var secretKey = _configuration["JwtSettings:Key"]
+                ?? _configuration["JwtSettings__Key"]
+                ?? _configuration["JWT_SECRET_KEY"]
+                ?? jwtSettings.GetValue<string>("Key")
+                ?? throw new InvalidOperationException("La clave secreta JWT (JwtSettings:Key o JwtSettings__Key) no está configurada.");
+
+            var issuer = _configuration["JwtSettings:Issuer"]
+                ?? _configuration["JwtSettings__Issuer"]
+                ?? jwtSettings.GetValue<string>("Issuer")
+                ?? "MapaConocimientoAPI";
+
+            var audience = _configuration["JwtSettings:Audience"]
+                ?? _configuration["JwtSettings__Audience"]
+                ?? jwtSettings.GetValue<string>("Audience")
+                ?? "MapaConocimientoReactClient";
+
+            var durationMinutes = jwtSettings.GetValue<double?>("DurationInMinutes") ?? 480;
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey!));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
             var tokenDescriptor = new JwtSecurityToken(
-                issuer: jwtSettings.GetValue<string>("Issuer"),
-                audience: jwtSettings.GetValue<string>("Audience"),
+                issuer: issuer,
+                audience: audience,
                 claims: claims,
-                expires: DateTime.UtcNow.AddMinutes(jwtSettings.GetValue<double>("DurationInMinutes")),
+                expires: DateTime.UtcNow.AddMinutes(durationMinutes),
                 signingCredentials: creds
             );
 

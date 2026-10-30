@@ -3,11 +3,19 @@ using mapa_conocimiento_api.Models;
 using mapa_conocimiento_api.Repositorios;
 using mapa_conocimiento_api.Servicios;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.OpenApi.Models;
-    
+
 var builder = WebApplication.CreateBuilder(args);
+
+// Soporte para puerto dinámico asignado por Render u otros proveedores cloud (PORT)
+var portEnv = Environment.GetEnvironmentVariable("PORT");
+if (!string.IsNullOrEmpty(portEnv))
+{
+    builder.WebHost.UseUrls($"http://+:{portEnv}");
+}
 
 // Agregar soporte para controladores
 builder.Services.AddControllers()
@@ -53,9 +61,23 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
-// --- CONFIGURACIÓN DE AUTENTICACIÓN JWT (FASE 3) ---
+// --- CONFIGURACIÓN DE AUTENTICACIÓN JWT (FASE 3 / PRODUCCIÓN) ---
 var jwtSettings = builder.Configuration.GetSection("JwtSettings");
-var secretKey = jwtSettings.GetValue<string>("Key");
+var secretKey = builder.Configuration["JwtSettings:Key"]
+    ?? builder.Configuration["JwtSettings__Key"]
+    ?? builder.Configuration["JWT_SECRET_KEY"]
+    ?? jwtSettings.GetValue<string>("Key")
+    ?? "ClavePorDefectoSuperSeguraParaDesarrolloLocalMinimo32Caracteres!";
+
+var jwtIssuer = builder.Configuration["JwtSettings:Issuer"]
+    ?? builder.Configuration["JwtSettings__Issuer"]
+    ?? jwtSettings.GetValue<string>("Issuer")
+    ?? "MapaConocimientoAPI";
+
+var jwtAudience = builder.Configuration["JwtSettings:Audience"]
+    ?? builder.Configuration["JwtSettings__Audience"]
+    ?? jwtSettings.GetValue<string>("Audience")
+    ?? "MapaConocimientoReactClient";
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
@@ -66,16 +88,25 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidateAudience = true,
             ValidateLifetime = true,
             ValidateIssuerSigningKey = true,
-            ValidIssuer = jwtSettings.GetValue<string>("Issuer"),
-            ValidAudience = jwtSettings.GetValue<string>("Audience"),
+            ValidIssuer = jwtIssuer,
+            ValidAudience = jwtAudience,
             // Convierte el string de la clave en un arreglo de bytes para la firma criptográfica
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey!))
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey))
         };
     });
 
-// Configuración del DbContext con PostgreSQL (Supabase)
+// --- CONFIGURACIÓN DEL DBCONTEXT CON POSTGRESQL (SUPABASE / PRODUCCIÓN) ---
+var supabaseConnection = builder.Configuration.GetConnectionString("SupabaseConnection")
+    ?? builder.Configuration.GetConnectionString("Supabase")
+    ?? builder.Configuration["ConnectionStrings__Supabase"]
+    ?? builder.Configuration["ConnectionStrings:Supabase"]
+    ?? builder.Configuration["ConnectionStrings__SupabaseConnection"]
+    ?? builder.Configuration["ConnectionStrings:SupabaseConnection"]
+    ?? builder.Configuration["DATABASE_URL"]
+    ?? builder.Configuration["SUPABASE_CONNECTION_STRING"];
+
 builder.Services.AddDbContext<postgresContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("SupabaseConnection")));
+    options.UseNpgsql(supabaseConnection));
 
 // ====================================================================
 // REGISTRO DE INYECCIÓN DE DEPENDENCIAS (Repositorios y Servicios)
@@ -169,21 +200,69 @@ builder.Services.AddScoped<IUsuarioService, UsuarioService>();
 // ====================================================================
 builder.Services.AddScoped<IReportesRepository, ReportesRepository>();
 builder.Services.AddScoped<IReportesService, ReportesService>();
+
 // ====================================================================
-// CONFIGURACIÓN DE CORS - FASE 3 / SEGURIDAD
+// CONFIGURACIÓN DE CORS - FASE 3 / SEGURIDAD Y PRODUCCIÓN (Render & Vercel)
 // ====================================================================
-var corsOriginsConfigurados = builder.Configuration.GetSection("CorsOrigins").Get<string[]>();
-var allowedOrigins = (corsOriginsConfigurados != null && corsOriginsConfigurados.Length > 0)
-    ? corsOriginsConfigurados
-    : new[] { "http://localhost:5173", "http://localhost:3000" };
+var allowedOriginsSet = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+{
+    "http://localhost:5173",
+    "http://localhost:3000",
+    "https://localhost:5173",
+    "https://localhost:3000"
+};
+
+// 1. Orígenes definidos como array en appsettings.json (CorsOrigins)
+var corsConfigArray = builder.Configuration.GetSection("CorsOrigins").Get<string[]>();
+if (corsConfigArray != null)
+{
+    foreach (var origin in corsConfigArray)
+    {
+        if (!string.IsNullOrWhiteSpace(origin))
+            allowedOriginsSet.Add(origin.Trim().TrimEnd('/'));
+    }
+}
+
+// 2. Orígenes definidos como variable de entorno (ALLOWED_ORIGINS o CorsOrigins)
+var envAllowedOrigins = builder.Configuration["ALLOWED_ORIGINS"] 
+    ?? builder.Configuration["CorsOrigins"]
+    ?? Environment.GetEnvironmentVariable("ALLOWED_ORIGINS")
+    ?? Environment.GetEnvironmentVariable("CorsOrigins");
+
+if (!string.IsNullOrWhiteSpace(envAllowedOrigins))
+{
+    var split = envAllowedOrigins.Split(new[] { ',', ';', ' ' }, StringSplitOptions.RemoveEmptyEntries);
+    foreach (var origin in split)
+    {
+        if (!string.IsNullOrWhiteSpace(origin))
+            allowedOriginsSet.Add(origin.Trim().TrimEnd('/'));
+    }
+}
 
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("PermitirFrontend", policy =>
     {
-        policy.WithOrigins(allowedOrigins)
-              .AllowAnyHeader()
-              .AllowAnyMethod();
+        policy.SetIsOriginAllowed(origin =>
+        {
+            if (string.IsNullOrWhiteSpace(origin)) return false;
+            var cleanOrigin = origin.TrimEnd('/');
+            
+            // Permite los orígenes configurados explícitamente (localhost, dominios de producción)
+            if (allowedOriginsSet.Contains(cleanOrigin)) return true;
+            
+            // Permite dinámicamente cualquier subdominio de Vercel (*.vercel.app)
+            if (Uri.TryCreate(origin, UriKind.Absolute, out var uri) && 
+                (uri.Host.EndsWith(".vercel.app", StringComparison.OrdinalIgnoreCase) || 
+                 uri.Host.Equals("vercel.app", StringComparison.OrdinalIgnoreCase)))
+            {
+                return true;
+            }
+
+            return false;
+        })
+        .AllowAnyHeader()
+        .AllowAnyMethod();
     });
 });
 
@@ -218,14 +297,26 @@ app.UseExceptionHandler(exceptionHandlerApp =>
     });
 });
 
-// Configuración del pipeline de peticiones HTTP
-if (app.Environment.IsDevelopment())
+// Soporte para encabezados reenviados (X-Forwarded-For, X-Forwarded-Proto) detrás del proxy inverso de Render
+app.UseForwardedHeaders(new ForwardedHeadersOptions
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
+    ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
+});
+
+// Swagger habilitado tanto en Development como en Production (exigido por 7_quickstart.md para validar Cold Start en Render)
+app.UseSwagger();
+app.UseSwaggerUI(c =>
+{
+    c.SwaggerEndpoint("/swagger/v1/swagger.json", "Mapa de Conocimiento API v1");
+    c.RoutePrefix = "swagger";
+});
+
+// Redirección HTTPS solo en desarrollo local (Render maneja la terminación TLS/SSL externamente)
+if (!app.Environment.IsProduction())
+{
+    app.UseHttpsRedirection();
 }
 
-app.UseHttpsRedirection();
 app.UseCors("PermitirFrontend");
 app.UseAuthentication();
 app.UseAuthorization();
