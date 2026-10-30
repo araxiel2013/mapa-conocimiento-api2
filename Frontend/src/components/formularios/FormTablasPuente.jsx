@@ -8,7 +8,9 @@ const RELACIONES = [
   { id: 'odsProyecto', label: '3. Proyecto <-> ODS', endpoint: '/OdsProyecto' },
   { id: 'proyectoLinea', label: '4. Proyecto <-> Línea Investigación', endpoint: '/ProyectoLinea' },
   { id: 'aliadoProyecto', label: '5. Proyecto <-> Aliado', endpoint: '/AliadoProyecto' },
-  { id: 'palabrasClave', label: '6. Producto <-> Término Clave (Palabras Clave)', endpoint: '/PalabrasClave' }
+  { id: 'palabrasClave', label: '6. Proyecto <-> Término Clave (Palabras Clave)', endpoint: '/PalabrasClave' },
+  { id: 'aa_proyecto', label: '7. Proyecto <-> Área de Aplicación', endpoint: '/AaProyecto' },
+  { id: 'ac_proyecto', label: '8. Proyecto <-> Área de Conocimiento', endpoint: '/AcProyecto' }
 ];
 
 export default function FormTablasPuente() {
@@ -21,7 +23,9 @@ export default function FormTablasPuente() {
   const [odsId, setOdsId] = useState('');
   const [lineaId, setLineaId] = useState('');
   const [aliadoNit, setAliadoNit] = useState('');
-  const [terminoClaveId, setTerminoClaveId] = useState('');
+  const [terminoClave, setTerminoClave] = useState('');
+  const [areaAplicacionId, setAreaAplicacionId] = useState('');
+  const [areaConocimientoId, setAreaConocimientoId] = useState('');
   const [rolDocente, setRolDocente] = useState('');
   const [descripcion, setDescripcion] = useState('');
 
@@ -35,7 +39,9 @@ export default function FormTablasPuente() {
     setOdsId('');
     setLineaId('');
     setAliadoNit('');
-    setTerminoClaveId('');
+    setTerminoClave('');
+    setAreaAplicacionId('');
+    setAreaConocimientoId('');
     setRolDocente('');
     setDescripcion('');
   };
@@ -58,8 +64,8 @@ export default function FormTablasPuente() {
           }
           endpoint = '/Desarrolla';
           payload = {
-            docente_cedula: parseInt(docenteCedula),
-            proyecto_id: parseInt(proyectoId),
+            docente_cedula: parseInt(docenteCedula, 10),
+            proyecto_id: parseInt(proyectoId, 10),
             rol: rolDocente.trim() || null,
             descripcion: descripcion.trim() || null
           };
@@ -73,8 +79,8 @@ export default function FormTablasPuente() {
           }
           endpoint = '/DocenteProducto';
           payload = {
-            docente_cedula: parseInt(docenteCedula),
-            producto_id: parseInt(productoId)
+            docente_cedula: parseInt(docenteCedula, 10),
+            producto_id: parseInt(productoId, 10)
           };
           break;
 
@@ -86,8 +92,8 @@ export default function FormTablasPuente() {
           }
           endpoint = '/OdsProyecto';
           payload = {
-            ods_id: parseInt(odsId),
-            proyecto_id: parseInt(proyectoId)
+            ods_id: parseInt(odsId, 10),
+            proyecto_id: parseInt(proyectoId, 10)
           };
           break;
 
@@ -99,8 +105,8 @@ export default function FormTablasPuente() {
           }
           endpoint = '/ProyectoLinea';
           payload = {
-            linea_investigacion_id: parseInt(lineaId),
-            proyecto_id: parseInt(proyectoId)
+            linea_investigacion_id: parseInt(lineaId, 10),
+            proyecto_id: parseInt(proyectoId, 10)
           };
           break;
 
@@ -112,21 +118,47 @@ export default function FormTablasPuente() {
           }
           endpoint = '/AliadoProyecto';
           payload = {
-            aliado_nit: parseInt(aliadoNit),
-            proyecto_id: parseInt(proyectoId)
+            aliado_nit: parseInt(aliadoNit, 10),
+            proyecto_id: parseInt(proyectoId, 10)
           };
           break;
 
         case 'palabrasClave':
-          if (!terminoClaveId || !productoId) {
-            setMensaje({ texto: 'El ID del término clave y el ID del producto son obligatorios.', tipo: 'error' });
+          if (!proyectoId || !terminoClave || !terminoClave.trim()) {
+            setMensaje({ texto: 'El ID del proyecto y el término clave son obligatorios.', tipo: 'error' });
             setCargando(false);
             return;
           }
           endpoint = '/PalabrasClave';
           payload = {
-            termino_clave_id: parseInt(terminoClaveId),
-            producto_id: parseInt(productoId)
+            proyecto_id: parseInt(proyectoId, 10),
+            termino_clave: terminoClave.trim()
+          };
+          break;
+
+        case 'aa_proyecto':
+          if (!proyectoId || !areaAplicacionId) {
+            setMensaje({ texto: 'El ID del proyecto y el ID del área de aplicación son obligatorios.', tipo: 'error' });
+            setCargando(false);
+            return;
+          }
+          endpoint = '/AaProyecto';
+          payload = {
+            proyecto_id: parseInt(proyectoId, 10),
+            area_aplicacion_id: parseInt(areaAplicacionId, 10)
+          };
+          break;
+
+        case 'ac_proyecto':
+          if (!proyectoId || !areaConocimientoId) {
+            setMensaje({ texto: 'El ID del proyecto y el ID del área de conocimiento son obligatorios.', tipo: 'error' });
+            setCargando(false);
+            return;
+          }
+          endpoint = '/AcProyecto';
+          payload = {
+            proyecto_id: parseInt(proyectoId, 10),
+            area_conocimiento_id: parseInt(areaConocimientoId, 10)
           };
           break;
 
@@ -183,7 +215,15 @@ export default function FormTablasPuente() {
         />
       )}
 
-      {(tipoRelacion === 'desarrolla' || tipoRelacion === 'odsProyecto' || tipoRelacion === 'proyectoLinea' || tipoRelacion === 'aliadoProyecto') && (
+      {(
+        tipoRelacion === 'desarrolla' ||
+        tipoRelacion === 'odsProyecto' ||
+        tipoRelacion === 'proyectoLinea' ||
+        tipoRelacion === 'aliadoProyecto' ||
+        tipoRelacion === 'palabrasClave' ||
+        tipoRelacion === 'aa_proyecto' ||
+        tipoRelacion === 'ac_proyecto'
+      ) && (
         <InputInstitucional
           label="ID del Proyecto *"
           name="proyectoId"
@@ -195,7 +235,7 @@ export default function FormTablasPuente() {
         />
       )}
 
-      {(tipoRelacion === 'docenteProducto' || tipoRelacion === 'palabrasClave') && (
+      {tipoRelacion === 'docenteProducto' && (
         <InputInstitucional
           label="ID del Producto *"
           name="productoId"
@@ -245,13 +285,37 @@ export default function FormTablasPuente() {
 
       {tipoRelacion === 'palabrasClave' && (
         <InputInstitucional
-          label="ID del Término Clave *"
-          name="terminoClaveId"
+          label="Término Clave *"
+          name="terminoClave"
+          type="text"
+          value={terminoClave}
+          onChange={(e) => setTerminoClave(e.target.value)}
+          placeholder="Ej. Inteligencia Artificial"
+          isValid={terminoClave.trim().length > 0}
+        />
+      )}
+
+      {tipoRelacion === 'aa_proyecto' && (
+        <InputInstitucional
+          label="ID del Área de Aplicación *"
+          name="areaAplicacionId"
           type="number"
-          value={terminoClaveId}
-          onChange={(e) => setTerminoClaveId(e.target.value)}
-          placeholder="Ej. 8"
-          isValid={terminoClaveId.length > 0}
+          value={areaAplicacionId}
+          onChange={(e) => setAreaAplicacionId(e.target.value)}
+          placeholder="Ej. 4"
+          isValid={areaAplicacionId.length > 0}
+        />
+      )}
+
+      {tipoRelacion === 'ac_proyecto' && (
+        <InputInstitucional
+          label="ID del Área de Conocimiento *"
+          name="areaConocimientoId"
+          type="number"
+          value={areaConocimientoId}
+          onChange={(e) => setAreaConocimientoId(e.target.value)}
+          placeholder="Ej. 2"
+          isValid={areaConocimientoId.length > 0}
         />
       )}
 
@@ -288,4 +352,3 @@ export default function FormTablasPuente() {
     </form>
   );
 }
-
