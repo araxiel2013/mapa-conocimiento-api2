@@ -4,31 +4,28 @@ using mapa_conocimiento_api.Repositorios;
 
 namespace mapa_conocimiento_api.Servicios
 {
-    // Implementación de las reglas de negocio para area_conocimiento
     public class AreaConocimientoService : IAreaConocimientoService
     {
         private readonly IAreaConocimientoRepository _repositorio;
 
-        // Inyección de dependencias del repositorio
         public AreaConocimientoService(IAreaConocimientoRepository repositorio)
         {
             _repositorio = repositorio;
         }
 
-        public async Task<IEnumerable<area_conocimiento>> ObtenerTodosAsync()
+        public async Task<IEnumerable<AreaConocimiento>> ObtenerTodosAsync()
         {
             return await _repositorio.ObtenerTodosAsync();
         }
 
-        public async Task<area_conocimiento?> ObtenerPorIdAsync(int id)
+        public async Task<AreaConocimiento?> ObtenerPorIdAsync(int id)
         {
             return await _repositorio.ObtenerPorIdAsync(id);
         }
 
-        public async Task<area_conocimiento> CrearAsync(AreaConocimientoCrear peticion)
+        public async Task<AreaConocimiento> CrearAsync(AreaConocimientoCrear peticion)
         {
-            // Mapeo manual del DTO de entrada hacia la entidad de dominio
-            var nuevaEntidad = new area_conocimiento
+            var nuevaEntidad = new AreaConocimiento
             {
                 gran_area = peticion.gran_area,
                 area = peticion.area,
@@ -41,14 +38,12 @@ namespace mapa_conocimiento_api.Servicios
 
         public async Task<bool> ActualizarAsync(int id, AreaConocimientoEditar peticion)
         {
-            // Verificamos si existe antes de intentar actualizar
             var entidadExistente = await _repositorio.ObtenerPorIdAsync(id);
             if (entidadExistente == null) 
             {
-                return false; // El controlador lo interpretará como un 404 Not Found
+                return false;
             }
 
-            // Aplicamos el reemplazo completo de los datos (regla del PUT)
             entidadExistente.gran_area = peticion.gran_area;
             entidadExistente.area = peticion.area;
             entidadExistente.disciplina = peticion.disciplina;
@@ -59,7 +54,6 @@ namespace mapa_conocimiento_api.Servicios
 
         public async Task<bool> EliminarAsync(int id)
         {
-            // Verificamos si existe antes de intentar hacer el borrado lógico
             var entidadExistente = await _repositorio.ObtenerPorIdAsync(id);
             if (entidadExistente == null) 
             {

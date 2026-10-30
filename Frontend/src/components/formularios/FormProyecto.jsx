@@ -13,6 +13,7 @@ export default function FormProyecto() {
     fecha_fin: ''
   });
 
+  const [cargando, setCargando] = useState(false);
   const [mensaje, setMensaje] = useState({ texto: '', tipo: '' });
 
   const handleChange = (e) => {
@@ -26,6 +27,7 @@ export default function FormProyecto() {
       return;
     }
 
+    setCargando(true);
     setMensaje({ texto: 'Guardando...', tipo: 'exito' });
     try {
       const payload = {
@@ -43,6 +45,8 @@ export default function FormProyecto() {
         texto: error.response?.data?.mensaje || 'Hubo un error al guardar el proyecto.', 
         tipo: 'error' 
       });
+    } finally {
+      setCargando(false);
     }
   };
 
@@ -114,7 +118,7 @@ export default function FormProyecto() {
       )}
 
       <div className="mt-auto pt-10">
-        <button type="submit" className="hidden" id="btn-submit">Guardar</button>
+        <button type="submit" className="hidden" id="btn-submit" disabled={cargando}>{cargando ? 'Guardando...' : 'Guardar'}</button>
       </div>
     </form>
   );

@@ -22,7 +22,7 @@ namespace mapa_conocimiento_api.Servicios
             if (await _proyectoRepo.ObtenerPorIdAsync(peticion.proyecto_id) == null) throw new ArgumentException("El proyecto no existe.");
             if (await _lineaRepo.ObtenerPorIdAsync(peticion.linea_investigacion_id) == null) throw new ArgumentException("La línea de investigación no existe.");
 
-            await _repositorio.CrearAsync(new proyecto_linea { proyecto = peticion.proyecto_id, linea_investigacion = peticion.linea_investigacion_id });
+            await _repositorio.CrearAsync(new ProyectoLinea { proyecto = peticion.proyecto_id, linea_investigacion = peticion.linea_investigacion_id });
             return true;
         }
 
@@ -33,4 +33,3 @@ namespace mapa_conocimiento_api.Servicios
         }
     }
 }
-

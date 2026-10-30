@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Threading.Tasks;
 using mapa_conocimiento_api.Models;
 using mapa_conocimiento_api.Peticiones;
@@ -22,7 +22,7 @@ namespace mapa_conocimiento_api.Servicios
             if (await _docenteRepo.ObtenerPorIdAsync(peticion.docente_cedula) == null) throw new ArgumentException("El docente no existe.");
             if (await _productoRepo.ObtenerPorIdAsync(peticion.producto_id) == null) throw new ArgumentException("El producto no existe.");
 
-            await _repositorio.CrearAsync(new docente_producto { docente = peticion.docente_cedula, producto = peticion.producto_id });
+            await _repositorio.CrearAsync(new DocenteProducto { docente = peticion.docente_cedula, producto = peticion.producto_id });
             return true;
         }
 

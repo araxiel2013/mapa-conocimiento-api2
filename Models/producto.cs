@@ -4,7 +4,8 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace mapa_conocimiento_api.Models
 {
-    public class producto
+    [Table("producto")]
+    public class Producto
     {
         [Key]
         public int id { get; set; }
@@ -26,9 +27,9 @@ namespace mapa_conocimiento_api.Models
 
         // Propiedades de Navegación Virtual
         [ForeignKey("proyecto_id")]
-        public virtual proyecto? ProyectoRelacionado { get; set; }
+        public virtual Proyecto? ProyectoRelacionado { get; set; }
         
         [ForeignKey("tipo_producto_id")]
-        public virtual tipo_producto? TipoProductoRelacionado { get; set; }
+        public virtual TipoProducto? TipoProductoRelacionado { get; set; }
     }
 }

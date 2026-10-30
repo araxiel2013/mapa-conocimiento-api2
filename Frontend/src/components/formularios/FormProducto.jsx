@@ -117,7 +117,7 @@ export default function FormProducto() {
       )}
 
       <div className="mt-auto pt-10">
-        <button type="submit" className="hidden" id="btn-submit">Guardar</button>
+        <button type="submit" className="hidden" id="btn-submit" disabled={cargando}>{cargando ? 'Guardando...' : 'Guardar'}</button>
       </div>
     </form>
   );

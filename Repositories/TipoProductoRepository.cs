@@ -14,17 +14,17 @@ namespace mapa_conocimiento_api.Repositorios
             _context = context;
         }
 
-        public async Task<IEnumerable<tipo_producto>> ObtenerTodosAsync()
+        public async Task<IEnumerable<TipoProducto>> ObtenerTodosAsync()
         {
             return await _context.tipo_producto.ToListAsync();
         }
 
-        public async Task<tipo_producto?> ObtenerPorIdAsync(int id)
+        public async Task<TipoProducto?> ObtenerPorIdAsync(int id)
         {
             return await _context.tipo_producto.FindAsync(id);
         }
 
-        public async Task CrearAsync(tipo_producto entidad)
+        public async Task CrearAsync(TipoProducto entidad)
         {
             var nombreNormalizado = entidad.nombre.Trim();
             var existente = await _context.tipo_producto
@@ -39,7 +39,6 @@ namespace mapa_conocimiento_api.Repositorios
                     throw new ArgumentException($"Ya existe un tipo de producto con el nombre '{entidad.nombre}'.");
                 }
 
-                // Reactivación si estaba previamente inactivado (borrado lógico)
                 existente.categoria = entidad.categoria;
                 existente.clase = entidad.clase;
                 existente.nombre = nombreNormalizado;
@@ -56,7 +55,7 @@ namespace mapa_conocimiento_api.Repositorios
             await _context.SaveChangesAsync();
         }
 
-        public async Task ActualizarAsync(tipo_producto entidad)
+        public async Task ActualizarAsync(TipoProducto entidad)
         {
             _context.tipo_producto.Update(entidad);
             await _context.SaveChangesAsync();
@@ -73,4 +72,3 @@ namespace mapa_conocimiento_api.Repositorios
         }
     }
 }
-

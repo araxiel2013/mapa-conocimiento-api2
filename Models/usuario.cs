@@ -1,8 +1,12 @@
+using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace mapa_conocimiento_api.Models
 {
-    public class usuario
+    [Table("usuario")]
+    public class Usuario
     {
         [Key]
         public int id { get; set; }
@@ -18,6 +22,6 @@ namespace mapa_conocimiento_api.Models
         public DateTime fecha_actualizacion { get; set; }
 
         // Propiedad de navegación (Uno a Muchos hacia la tabla puente)
-        public virtual ICollection<rol_usuario> RolesUsuario { get; set; } = new List<rol_usuario>();
+        public virtual ICollection<RolUsuario> RolesUsuario { get; set; } = new List<RolUsuario>();
     }
 }

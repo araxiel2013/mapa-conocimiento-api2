@@ -1,17 +1,21 @@
 import axios from 'axios';
 
-// Creamos una instancia configurada apuntando a la variable de entorno de Vite
+// Limpiamos cualquier barra diagonal final duplicada en la URL base
+const rawBaseURL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+const baseURL = rawBaseURL.replace(/\/+$/, '');
+
+// Instancia centralizada de Axios para la plataforma
 const api = axios.create({
-    baseURL: import.meta.env.VITE_API_URL || 'http://localhost:5000/api'
+    baseURL,
+    // Timeout de 60 segundos para tolerar el tiempo de Cold Start (~50s) de la capa gratuita de Render
+    timeout: 60000
 });
 
-// Interceptor: Atrapa la petición ANTES de enviarla
+// Interceptor de Solicitud: Inyecta el token Bearer JWT automáticamente
 api.interceptors.request.use(
     (config) => {
-        // Buscamos el token en la memoria del navegador
         const token = localStorage.getItem('token');
         if (token) {
-            // Si hay token, se lo pegamos en la cabecera
             config.headers.Authorization = `Bearer ${token}`;
         }
         return config;
@@ -21,7 +25,7 @@ api.interceptors.request.use(
     }
 );
 
-// Interceptor de respuesta: Captura global de HTTP 401/403 para cerrar sesión en caliente
+// Interceptor de Respuesta: Maneja expiración de sesión (401/403) en caliente
 api.interceptors.response.use(
     (response) => {
         return response;
@@ -30,8 +34,7 @@ api.interceptors.response.use(
         const status = error.response?.status;
         const isLoginRequest = error.config?.url?.toLowerCase().includes('/auth/login');
 
-        // Si el token expiró (401) o no tiene permisos (403), cerramos sesión automáticamente
-        // salvo que sea la petición inicial de login con credenciales erróneas
+        // Si el token expiró (401) o no tiene permisos (403), limpiamos sesión y redirigimos
         if ((status === 401 || status === 403) && !isLoginRequest) {
             localStorage.removeItem('token');
             localStorage.removeItem('usuario');
@@ -45,4 +48,3 @@ api.interceptors.response.use(
 );
 
 export default api;
-

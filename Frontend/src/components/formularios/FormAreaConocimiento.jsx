@@ -68,7 +68,7 @@ export default function FormAreaConocimiento() {
       )}
 
       {/* Botón oculto real que envía el form; usaremos el botón Guardar de LayoutFormulario mediante ref o context luego */}
-      <button type="submit" className="hidden" id="btn-submit">Guardar</button>
+      <button type="submit" className="hidden" id="btn-submit" disabled={cargando}>{cargando ? 'Guardando...' : 'Guardar'}</button>
     </form>
   );
 }

@@ -1,3 +1,5 @@
+using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using mapa_conocimiento_api.Peticiones;
@@ -22,7 +24,7 @@ namespace mapa_conocimiento_api.Controllers
         public async Task<IActionResult> ObtenerTodos()
         {
             var resultados = await _servicio.ObtenerTodosAsync();
-            return Ok(resultados);
+            return Ok(new { tabla = "linea_investigacion", total = resultados.Count(), datos = resultados });
         }
 
         // GET: api/LineaInvestigacion/5
@@ -44,7 +46,7 @@ namespace mapa_conocimiento_api.Controllers
             try
             {
                 var nuevaEntidad = await _servicio.CrearAsync(peticion);
-                return CreatedAtAction(nameof(ObtenerPorId), new { id = nuevaEntidad.id }, nuevaEntidad);
+                return CreatedAtAction(nameof(ObtenerPorId), new { id = nuevaEntidad.id }, new { estado = 201, mensaje = "Línea de investigación creada exitosamente.", datos = nuevaEntidad });
             }
             catch (ArgumentException ex)
             {
@@ -63,7 +65,7 @@ namespace mapa_conocimiento_api.Controllers
                 {
                     return NotFound(new { estado = 404, mensaje = "La línea de investigación no fue encontrada para actualizar." });
                 }
-                return Ok(new { mensaje = "Línea de investigación actualizada correctamente." });
+                return Ok(new { estado = 200, mensaje = "Línea de investigación actualizada correctamente." });
             }
             catch (ArgumentException ex)
             {
@@ -80,7 +82,7 @@ namespace mapa_conocimiento_api.Controllers
             {
                 return NotFound(new { estado = 404, mensaje = "La línea de investigación no fue encontrada para eliminar." });
             }
-            return Ok(new { mensaje = "Línea de investigación eliminada correctamente." });
+            return Ok(new { estado = 200, mensaje = "Línea de investigación eliminada correctamente (borrado lógico)." });
         }
     }
 }

@@ -19,7 +19,7 @@ namespace mapa_conocimiento_api.Servicios
             _lineaInvestigacionRepository = lineaInvestigacionRepository;
         }
 
-        private DocenteResponse MapearAResponse(docente entidad)
+        private DocenteResponse MapearAResponse(Docente entidad)
         {
             return new DocenteResponse
             {
@@ -63,7 +63,6 @@ namespace mapa_conocimiento_api.Servicios
 
         public async Task<DocenteResponse> CrearAsync(DocenteCrear peticion)
         {
-            // VALIDACIÓN FASE 2: ¿La llave foránea existe y está activa?
             if (peticion.linea_investigacion_principal.HasValue)
             {
                 var linea = await _lineaInvestigacionRepository.ObtenerPorIdAsync(peticion.linea_investigacion_principal.Value);
@@ -76,7 +75,7 @@ namespace mapa_conocimiento_api.Servicios
 
             var nacionalidadValida = peticion.nacionalidad.Trim();
 
-            var nuevaEntidad = new docente
+            var nuevaEntidad = new Docente
             {
                 cedula = peticion.cedula,
                 nombres = peticion.nombres,
