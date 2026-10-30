@@ -163,6 +163,12 @@ builder.Services.AddScoped<IDocenteProductoService, DocenteProductoService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IUsuarioRepository, UsuarioRepository>();
 builder.Services.AddScoped<IUsuarioService, UsuarioService>();
+
+// ====================================================================
+// INYECCIÓN DE DEPENDENCIAS - FASE 4 (Reportes y Analítica)
+// ====================================================================
+builder.Services.AddScoped<IReportesRepository, ReportesRepository>();
+builder.Services.AddScoped<IReportesService, ReportesService>();
 // ====================================================================
 // CONFIGURACIÓN DE CORS - FASE 3 / SEGURIDAD
 // ====================================================================
