@@ -103,6 +103,7 @@ namespace mapa_conocimiento_api.Controllers
 
         // 5. Docentes por Línea y Participación en Proyectos
         [HttpGet("docentes-por-linea-proyectos")]
+        [HttpGet("proyectos-por-linea")]
         public async Task<IActionResult> ObtenerDocentesPorLineaYProyectos()
         {
             try
