@@ -22,7 +22,7 @@ namespace mapa_conocimiento_api.Servicios
             if (await _proyectoRepo.ObtenerPorIdAsync(peticion.proyecto_id) == null) throw new ArgumentException("El proyecto no existe.");
             if (await _terminoRepo.ObtenerPorIdAsync(peticion.termino_clave) == null) throw new ArgumentException("El término clave no existe.");
 
-            await _repositorio.CrearAsync(new palabras_clave { proyecto = peticion.proyecto_id, termino_clave = peticion.termino_clave });
+            await _repositorio.CrearAsync(new PalabrasClave { proyecto = peticion.proyecto_id, termino_clave = peticion.termino_clave });
             return true;
         }
 
@@ -33,4 +33,3 @@ namespace mapa_conocimiento_api.Servicios
         }
     }
 }
-

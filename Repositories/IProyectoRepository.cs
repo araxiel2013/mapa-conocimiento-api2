@@ -6,11 +6,10 @@ namespace mapa_conocimiento_api.Repositorios
 {
     public interface IProyectoRepository
     {
-        Task<IEnumerable<proyecto>> ObtenerTodosAsync();
-        Task<proyecto?> ObtenerPorIdAsync(int id);
-        Task CrearAsync(proyecto entidad);
-        Task ActualizarAsync(proyecto entidad);
+        Task<IEnumerable<Proyecto>> ObtenerTodosAsync();
+        Task<Proyecto?> ObtenerPorIdAsync(int id);
+        Task CrearAsync(Proyecto entidad);
+        Task ActualizarAsync(Proyecto entidad);
         Task EliminarAsync(int id);
     }
 }
-

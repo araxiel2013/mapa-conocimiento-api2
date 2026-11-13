@@ -1,12 +1,12 @@
+using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using mapa_conocimiento_api.Models;
 using mapa_conocimiento_api.Peticiones;
 using mapa_conocimiento_api.Servicios;
 
 namespace mapa_conocimiento_api.Controllers
 {
-    // Habilita la validación automática de DTOs y define la ruta base: api/AreaConocimiento
     [ApiController]
     [Route("api/[controller]")]
     [Authorize]
@@ -14,7 +14,6 @@ namespace mapa_conocimiento_api.Controllers
     {
         private readonly IAreaConocimientoService _servicio;
 
-        // Inyectamos nuestro servicio
         public AreaConocimientoController(IAreaConocimientoService servicio)
         {
             _servicio = servicio;
@@ -25,7 +24,7 @@ namespace mapa_conocimiento_api.Controllers
         public async Task<IActionResult> ObtenerTodos()
         {
             var resultados = await _servicio.ObtenerTodosAsync();
-            return Ok(resultados); // 200 OK
+            return Ok(new { tabla = "area_conocimiento", total = resultados.Count(), datos = resultados });
         }
 
         // GET: api/AreaConocimiento/5
@@ -35,30 +34,43 @@ namespace mapa_conocimiento_api.Controllers
             var resultado = await _servicio.ObtenerPorIdAsync(id);
             if (resultado == null) 
             {
-                return NotFound(new { mensaje = "El área de conocimiento no fue encontrada." }); // 404 Not Found
+                return NotFound(new { estado = 404, mensaje = "El área de conocimiento no fue encontrada." });
             }
-            return Ok(resultado); // 200 OK
+            return Ok(resultado);
         }
 
         // POST: api/AreaConocimiento
         [HttpPost]
         public async Task<IActionResult> Crear([FromBody] AreaConocimientoCrear peticion)
         {
-            var nuevaEntidad = await _servicio.CrearAsync(peticion);
-            // 201 Created, devuelve la URL para consultar el nuevo recurso y el objeto creado
-            return CreatedAtAction(nameof(ObtenerPorId), new { id = nuevaEntidad.id }, nuevaEntidad);
+            try
+            {
+                var nuevaEntidad = await _servicio.CrearAsync(peticion);
+                return CreatedAtAction(nameof(ObtenerPorId), new { id = nuevaEntidad.id }, new { estado = 201, mensaje = "Área de conocimiento creada exitosamente.", datos = nuevaEntidad });
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new { estado = 400, mensaje = ex.Message });
+            }
         }
 
         // PUT: api/AreaConocimiento/5
         [HttpPut("{id}")]
         public async Task<IActionResult> Actualizar(int id, [FromBody] AreaConocimientoEditar peticion)
         {
-            var fueActualizado = await _servicio.ActualizarAsync(id, peticion);
-            if (!fueActualizado) 
+            try
             {
-                return NotFound(new { mensaje = "El área de conocimiento no fue encontrada para actualizar." }); // 404 Not Found
+                var fueActualizado = await _servicio.ActualizarAsync(id, peticion);
+                if (!fueActualizado) 
+                {
+                    return NotFound(new { estado = 404, mensaje = "El área de conocimiento no fue encontrada para actualizar." });
+                }
+                return Ok(new { estado = 200, mensaje = "Área de conocimiento actualizada correctamente." });
             }
-            return Ok(new { mensaje = "Área de conocimiento actualizada correctamente." }); // 200 OK
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new { estado = 400, mensaje = ex.Message });
+            }
         }
 
         // DELETE: api/AreaConocimiento/5
@@ -68,9 +80,9 @@ namespace mapa_conocimiento_api.Controllers
             var fueEliminado = await _servicio.EliminarAsync(id);
             if (!fueEliminado) 
             {
-                return NotFound(new { mensaje = "El área de conocimiento no fue encontrada para eliminar." }); // 404 Not Found
+                return NotFound(new { estado = 404, mensaje = "El área de conocimiento no fue encontrada para eliminar." });
             }
-            return Ok(new { mensaje = "Área de conocimiento eliminada correctamente." }); // 200 OK
+            return Ok(new { estado = 200, mensaje = "Área de conocimiento eliminada correctamente (borrado lógico)." });
         }
     }
 }

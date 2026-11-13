@@ -1,3 +1,5 @@
+using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using mapa_conocimiento_api.Peticiones;
@@ -22,7 +24,7 @@ namespace mapa_conocimiento_api.Controllers
         public async Task<IActionResult> ObtenerTodos()
         {
             var resultados = await _servicio.ObtenerTodosAsync();
-            return Ok(resultados); 
+            return Ok(new { tabla = "objetivo_desarrollo_sostenible", total = resultados.Count(), datos = resultados });
         }
 
         // GET: api/ObjetivoDesarrolloSostenible/5
@@ -32,7 +34,7 @@ namespace mapa_conocimiento_api.Controllers
             var resultado = await _servicio.ObtenerPorIdAsync(id);
             if (resultado == null) 
             {
-                return NotFound(new { mensaje = "El ODS no fue encontrado." }); 
+                return NotFound(new { estado = 404, mensaje = "El ODS no fue encontrado." }); 
             }
             return Ok(resultado); 
         }
@@ -41,20 +43,34 @@ namespace mapa_conocimiento_api.Controllers
         [HttpPost]
         public async Task<IActionResult> Crear([FromBody] ObjetivoDesarrolloSostenibleCrear peticion)
         {
-            var nuevaEntidad = await _servicio.CrearAsync(peticion);
-            return CreatedAtAction(nameof(ObtenerPorId), new { id = nuevaEntidad.id }, nuevaEntidad);
+            try
+            {
+                var nuevaEntidad = await _servicio.CrearAsync(peticion);
+                return CreatedAtAction(nameof(ObtenerPorId), new { id = nuevaEntidad.id }, new { estado = 201, mensaje = "ODS creado exitosamente.", datos = nuevaEntidad });
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new { estado = 400, mensaje = ex.Message });
+            }
         }
 
         // PUT: api/ObjetivoDesarrolloSostenible/5
         [HttpPut("{id}")]
         public async Task<IActionResult> Actualizar(int id, [FromBody] ObjetivoDesarrolloSostenibleEditar peticion)
         {
-            var fueActualizado = await _servicio.ActualizarAsync(id, peticion);
-            if (!fueActualizado) 
+            try
             {
-                return NotFound(new { mensaje = "El ODS no fue encontrado para actualizar." }); 
+                var fueActualizado = await _servicio.ActualizarAsync(id, peticion);
+                if (!fueActualizado) 
+                {
+                    return NotFound(new { estado = 404, mensaje = "El ODS no fue encontrado para actualizar." }); 
+                }
+                return Ok(new { estado = 200, mensaje = "ODS actualizado correctamente." }); 
             }
-            return Ok(new { mensaje = "ODS actualizado correctamente." }); 
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new { estado = 400, mensaje = ex.Message });
+            }
         }
 
         // DELETE: api/ObjetivoDesarrolloSostenible/5
@@ -64,9 +80,9 @@ namespace mapa_conocimiento_api.Controllers
             var fueEliminado = await _servicio.EliminarAsync(id);
             if (!fueEliminado) 
             {
-                return NotFound(new { mensaje = "El ODS no fue encontrado para eliminar." }); 
+                return NotFound(new { estado = 404, mensaje = "El ODS no fue encontrado para eliminar." }); 
             }
-            return Ok(new { mensaje = "ODS eliminado correctamente." }); 
+            return Ok(new { estado = 200, mensaje = "ODS eliminado correctamente (borrado lógico)." }); 
         }
     }
 }

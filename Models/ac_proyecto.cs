@@ -2,16 +2,17 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace mapa_conocimiento_api.Models
 {
-    public class ac_proyecto
+    [Table("ac_proyecto")]
+    public class AcProyecto
     {
         public int proyecto { get; set; }
         public int area_conocimiento { get; set; }
         public bool activo { get; set; }
 
         [ForeignKey("proyecto")]
-        public virtual proyecto? ProyectoRelacionado { get; set; }
+        public virtual Proyecto? ProyectoRelacionado { get; set; }
         
         [ForeignKey("area_conocimiento")]
-        public virtual area_conocimiento? AreaConocimientoRelacionada { get; set; }
+        public virtual AreaConocimiento? AreaConocimientoRelacionada { get; set; }
     }
 }

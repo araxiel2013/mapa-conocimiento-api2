@@ -1,3 +1,7 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using mapa_conocimiento_api.Models;
 using mapa_conocimiento_api.Peticiones;
 using mapa_conocimiento_api.Repositorios;
@@ -10,7 +14,6 @@ namespace mapa_conocimiento_api.Servicios
         private readonly IProyectoRepository _proyectoRepository;
         private readonly ITipoProductoRepository _tipoProductoRepository;
 
-        // Inyectamos los repositorios necesarios para validar las FKs
         public ProductoService(
             IProductoRepository repositorio, 
             IProyectoRepository proyectoRepository, 
@@ -21,7 +24,7 @@ namespace mapa_conocimiento_api.Servicios
             _tipoProductoRepository = tipoProductoRepository;
         }
 
-        private ProductoResponse MapearAResponse(producto entidad)
+        private ProductoResponse MapearAResponse(Producto entidad)
         {
             return new ProductoResponse
             {
@@ -37,11 +40,13 @@ namespace mapa_conocimiento_api.Servicios
                           nombre = entidad.ProyectoRelacionado.titulo 
                       } 
                     : null,
-                tipo_producto = new ItemRelacionadoResponse 
-                { 
-                    id = entidad.TipoProductoRelacionado!.id, 
-                    nombre = entidad.TipoProductoRelacionado.nombre 
-                }
+                tipo_producto = entidad.TipoProductoRelacionado != null 
+                    ? new ItemRelacionadoResponse 
+                      { 
+                          id = entidad.TipoProductoRelacionado.id, 
+                          nombre = entidad.TipoProductoRelacionado.nombre 
+                      } 
+                    : null
             };
         }
 
@@ -59,12 +64,10 @@ namespace mapa_conocimiento_api.Servicios
 
         public async Task<ProductoResponse> CrearAsync(ProductoCrear peticion)
         {
-            // VALIDACIÓN 1: Tipo de Producto (Obligatorio)
             var tipo = await _tipoProductoRepository.ObtenerPorIdAsync(peticion.tipo_producto_id);
             if (tipo == null) 
                 throw new ArgumentException("El tipo de producto seleccionado no existe o está inactivo.");
 
-            // VALIDACIÓN 2: Proyecto (Opcional)
             if (peticion.proyecto_id.HasValue)
             {
                 var proyecto = await _proyectoRepository.ObtenerPorIdAsync(peticion.proyecto_id.Value);
@@ -74,7 +77,7 @@ namespace mapa_conocimiento_api.Servicios
 
             var fechaEntregaUtc = DateTime.SpecifyKind(peticion.fecha_entrega.Date, DateTimeKind.Utc);
 
-            var nuevaEntidad = new producto
+            var nuevaEntidad = new Producto
             {
                 nombre = peticion.nombre,
                 categoria = peticion.categoria,
@@ -95,7 +98,6 @@ namespace mapa_conocimiento_api.Servicios
             var entidadExistente = await _repositorio.ObtenerPorIdAsync(id);
             if (entidadExistente == null) return false;
 
-            // VALIDAMOS SI CAMBIARON LAS FKs
             if (peticion.tipo_producto_id != entidadExistente.tipo_producto_id)
             {
                 var tipo = await _tipoProductoRepository.ObtenerPorIdAsync(peticion.tipo_producto_id);

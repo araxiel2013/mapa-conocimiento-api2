@@ -1,3 +1,5 @@
+using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using mapa_conocimiento_api.Peticiones;
@@ -22,7 +24,7 @@ namespace mapa_conocimiento_api.Controllers
         public async Task<IActionResult> ObtenerTodos()
         {
             var resultados = await _servicio.ObtenerTodosAsync();
-            return Ok(resultados);
+            return Ok(new { tabla = "termino_clave", total = resultados.Count(), datos = resultados });
         }
 
         // GET: api/TerminoClave/inteligencia-artificial
@@ -32,7 +34,7 @@ namespace mapa_conocimiento_api.Controllers
             var resultado = await _servicio.ObtenerPorIdAsync(termino);
             if (resultado == null) 
             {
-                return NotFound(new { mensaje = "El término clave no fue encontrado." });
+                return NotFound(new { estado = 404, mensaje = "El término clave no fue encontrado." });
             }
             return Ok(resultado);
         }
@@ -44,8 +46,7 @@ namespace mapa_conocimiento_api.Controllers
             try
             {
                 var nuevaEntidad = await _servicio.CrearAsync(peticion);
-                // Redirigimos a ObtenerPorId usando el string recién creado
-                return CreatedAtAction(nameof(ObtenerPorId), new { termino = nuevaEntidad.termino }, nuevaEntidad);
+                return CreatedAtAction(nameof(ObtenerPorId), new { termino = nuevaEntidad.termino }, new { estado = 201, mensaje = "Término clave creado exitosamente.", datos = nuevaEntidad });
             }
             catch (ArgumentException ex)
             {
@@ -60,9 +61,9 @@ namespace mapa_conocimiento_api.Controllers
             var fueEliminado = await _servicio.EliminarAsync(termino);
             if (!fueEliminado) 
             {
-                return NotFound(new { mensaje = "El término clave no fue encontrado para eliminar." });
+                return NotFound(new { estado = 404, mensaje = "El término clave no fue encontrado para eliminar." });
             }
-            return Ok(new { mensaje = "Término clave eliminado correctamente." });
+            return Ok(new { estado = 200, mensaje = "Término clave eliminado correctamente (borrado lógico)." });
         }
     }
 }

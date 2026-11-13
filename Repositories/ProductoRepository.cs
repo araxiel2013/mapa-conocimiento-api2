@@ -12,16 +12,15 @@ namespace mapa_conocimiento_api.Repositorios
             _context = context;
         }
 
-        public async Task<IEnumerable<producto>> ObtenerTodosAsync()
+        public async Task<IEnumerable<Producto>> ObtenerTodosAsync()
         {
-            // CRÍTICO FASE 2: Eager Loading para las dos llaves foráneas
             return await _context.producto
                 .Include(p => p.ProyectoRelacionado)
                 .Include(p => p.TipoProductoRelacionado)
                 .ToListAsync();
         }
 
-        public async Task<producto?> ObtenerPorIdAsync(int id)
+        public async Task<Producto?> ObtenerPorIdAsync(int id)
         {
             return await _context.producto
                 .Include(p => p.ProyectoRelacionado)
@@ -29,14 +28,39 @@ namespace mapa_conocimiento_api.Repositorios
                 .FirstOrDefaultAsync(p => p.id == id);
         }
 
-        public async Task CrearAsync(producto entidad)
+        public async Task CrearAsync(Producto entidad)
         {
+            var nombreNormalizado = entidad.nombre.Trim();
+            var existente = await _context.producto
+                .IgnoreQueryFilters()
+                .FirstOrDefaultAsync(p => (entidad.id > 0 && p.id == entidad.id) ||
+                                          p.nombre.ToLower() == nombreNormalizado.ToLower());
+
+            if (existente != null)
+            {
+                if (existente.activo)
+                {
+                    throw new ArgumentException($"Ya existe un producto con el nombre '{entidad.nombre}'.");
+                }
+
+                existente.nombre = nombreNormalizado;
+                existente.categoria = entidad.categoria;
+                existente.fecha_entrega = entidad.fecha_entrega;
+                existente.proyecto_id = entidad.proyecto_id;
+                existente.tipo_producto_id = entidad.tipo_producto_id;
+                existente.activo = true;
+                await _context.SaveChangesAsync();
+                entidad.id = existente.id;
+                return;
+            }
+
+            entidad.nombre = nombreNormalizado;
             entidad.activo = true;
             await _context.producto.AddAsync(entidad);
             await _context.SaveChangesAsync();
         }
 
-        public async Task ActualizarAsync(producto entidad)
+        public async Task ActualizarAsync(Producto entidad)
         {
             _context.producto.Update(entidad);
             await _context.SaveChangesAsync();
@@ -48,6 +72,10 @@ namespace mapa_conocimiento_api.Repositorios
             if (entidad != null)
             {
                 entidad.activo = false;
+
+                var docenteProductoRelaciones = await _context.docente_producto.Where(dp => dp.producto == id).ToListAsync();
+                foreach (var dp in docenteProductoRelaciones) dp.activo = false;
+
                 await _context.SaveChangesAsync();
             }
         }

@@ -3,7 +3,6 @@ using mapa_conocimiento_api.Models;
 
 namespace mapa_conocimiento_api.Repositorios
 {
-    // Implementación del acceso a datos para aliado usando EF Core
     public class AliadoRepository : IAliadoRepository
     {
         private readonly postgresContext _context;
@@ -13,18 +12,17 @@ namespace mapa_conocimiento_api.Repositorios
             _context = context;
         }
 
-        public async Task<IEnumerable<aliado>> ObtenerTodosAsync()
+        public async Task<IEnumerable<Aliado>> ObtenerTodosAsync()
         {
             return await _context.aliado.ToListAsync();
         }
 
-        public async Task<aliado?> ObtenerPorIdAsync(int nit)
+        public async Task<Aliado?> ObtenerPorIdAsync(int nit)
         {
-            // Buscamos utilizando la llave primaria que en este caso es el NIT
             return await _context.aliado.FindAsync(nit);
         }
 
-        public async Task CrearAsync(aliado entidad)
+        public async Task CrearAsync(Aliado entidad)
         {
             var existente = await _context.aliado
                 .IgnoreQueryFilters()
@@ -37,7 +35,6 @@ namespace mapa_conocimiento_api.Repositorios
                     throw new ArgumentException($"Ya existe un aliado registrado con el NIT {entidad.nit}.");
                 }
 
-                // Reactivación si estaba previamente inactivado (borrado lógico)
                 existente.razon_social = entidad.razon_social;
                 existente.nombre_contacto = entidad.nombre_contacto;
                 existente.correo = entidad.correo;
@@ -48,12 +45,12 @@ namespace mapa_conocimiento_api.Repositorios
                 return;
             }
 
-            entidad.activo = true; // Todo nuevo registro nace activo por defecto
+            entidad.activo = true;
             await _context.aliado.AddAsync(entidad);
             await _context.SaveChangesAsync();
         }
 
-        public async Task ActualizarAsync(aliado entidad)
+        public async Task ActualizarAsync(Aliado entidad)
         {
             _context.aliado.Update(entidad);
             await _context.SaveChangesAsync();
@@ -64,8 +61,11 @@ namespace mapa_conocimiento_api.Repositorios
             var entidad = await _context.aliado.FindAsync(nit);
             if (entidad != null)
             {
-                // Aplicamos el borrado lógico
                 entidad.activo = false;
+
+                var aliadoProyectoRelaciones = await _context.aliado_proyecto.Where(ap => ap.aliado == nit).ToListAsync();
+                foreach (var ap in aliadoProyectoRelaciones) ap.activo = false;
+
                 await _context.SaveChangesAsync();
             }
         }

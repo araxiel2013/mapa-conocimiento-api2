@@ -1,3 +1,5 @@
+using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using mapa_conocimiento_api.Peticiones;
@@ -22,7 +24,7 @@ namespace mapa_conocimiento_api.Controllers
         public async Task<IActionResult> ObtenerTodos()
         {
             var resultados = await _servicio.ObtenerTodosAsync();
-            return Ok(resultados);
+            return Ok(new { tabla = "linea_investigacion", total = resultados.Count(), datos = resultados });
         }
 
         // GET: api/LineaInvestigacion/5
@@ -32,7 +34,7 @@ namespace mapa_conocimiento_api.Controllers
             var resultado = await _servicio.ObtenerPorIdAsync(id);
             if (resultado == null) 
             {
-                return NotFound(new { mensaje = "La línea de investigación no fue encontrada." });
+                return NotFound(new { estado = 404, mensaje = "La línea de investigación no fue encontrada." });
             }
             return Ok(resultado);
         }
@@ -41,20 +43,34 @@ namespace mapa_conocimiento_api.Controllers
         [HttpPost]
         public async Task<IActionResult> Crear([FromBody] LineaInvestigacionCrear peticion)
         {
-            var nuevaEntidad = await _servicio.CrearAsync(peticion);
-            return CreatedAtAction(nameof(ObtenerPorId), new { id = nuevaEntidad.id }, nuevaEntidad);
+            try
+            {
+                var nuevaEntidad = await _servicio.CrearAsync(peticion);
+                return CreatedAtAction(nameof(ObtenerPorId), new { id = nuevaEntidad.id }, new { estado = 201, mensaje = "Línea de investigación creada exitosamente.", datos = nuevaEntidad });
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new { estado = 400, mensaje = ex.Message });
+            }
         }
 
         // PUT: api/LineaInvestigacion/5
         [HttpPut("{id}")]
         public async Task<IActionResult> Actualizar(int id, [FromBody] LineaInvestigacionEditar peticion)
         {
-            var fueActualizado = await _servicio.ActualizarAsync(id, peticion);
-            if (!fueActualizado) 
+            try
             {
-                return NotFound(new { mensaje = "La línea de investigación no fue encontrada para actualizar." });
+                var fueActualizado = await _servicio.ActualizarAsync(id, peticion);
+                if (!fueActualizado) 
+                {
+                    return NotFound(new { estado = 404, mensaje = "La línea de investigación no fue encontrada para actualizar." });
+                }
+                return Ok(new { estado = 200, mensaje = "Línea de investigación actualizada correctamente." });
             }
-            return Ok(new { mensaje = "Línea de investigación actualizada correctamente." });
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new { estado = 400, mensaje = ex.Message });
+            }
         }
 
         // DELETE: api/LineaInvestigacion/5
@@ -64,9 +80,9 @@ namespace mapa_conocimiento_api.Controllers
             var fueEliminado = await _servicio.EliminarAsync(id);
             if (!fueEliminado) 
             {
-                return NotFound(new { mensaje = "La línea de investigación no fue encontrada para eliminar." });
+                return NotFound(new { estado = 404, mensaje = "La línea de investigación no fue encontrada para eliminar." });
             }
-            return Ok(new { mensaje = "Línea de investigación eliminada correctamente." });
+            return Ok(new { estado = 200, mensaje = "Línea de investigación eliminada correctamente (borrado lógico)." });
         }
     }
 }

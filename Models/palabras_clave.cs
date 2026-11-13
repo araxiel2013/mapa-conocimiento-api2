@@ -2,16 +2,17 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace mapa_conocimiento_api.Models
 {
-    public class palabras_clave
+    [Table("palabras_clave")]
+    public class PalabrasClave
     {
         public int proyecto { get; set; }
         public required string termino_clave { get; set; }
         public bool activo { get; set; }
 
         [ForeignKey("proyecto")]
-        public virtual proyecto? ProyectoRelacionado { get; set; }
+        public virtual Proyecto? ProyectoRelacionado { get; set; }
         
         [ForeignKey("termino_clave")]
-        public virtual termino_clave? TerminoClaveRelacionado { get; set; }
+        public virtual TerminoClave? TerminoClaveRelacionado { get; set; }
     }
 }

@@ -85,7 +85,7 @@ export default function Dashboard() {
         api.get('/Reportes/proyectos-por-gran-area'),
         api.get('/Reportes/productos-por-ods'),
         api.get('/Reportes/presupuesto-por-financiacion'),
-        api.get('/Reportes/proyectos-por-linea')
+        api.get('/Reportes/docentes-por-linea-proyectos')
       ]);
 
       // 1. KPIs Generales

@@ -3,7 +3,8 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace mapa_conocimiento_api.Models
 {
-    public class proyecto
+    [Table("proyecto")]
+    public class Proyecto
     {
         public int id { get; set; }
 

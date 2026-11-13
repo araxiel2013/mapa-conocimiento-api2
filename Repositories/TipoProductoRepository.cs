@@ -14,24 +14,48 @@ namespace mapa_conocimiento_api.Repositorios
             _context = context;
         }
 
-        public async Task<IEnumerable<tipo_producto>> ObtenerTodosAsync()
+        public async Task<IEnumerable<TipoProducto>> ObtenerTodosAsync()
         {
             return await _context.tipo_producto.ToListAsync();
         }
 
-        public async Task<tipo_producto?> ObtenerPorIdAsync(int id)
+        public async Task<TipoProducto?> ObtenerPorIdAsync(int id)
         {
             return await _context.tipo_producto.FindAsync(id);
         }
 
-        public async Task CrearAsync(tipo_producto entidad)
+        public async Task CrearAsync(TipoProducto entidad)
         {
+            var nombreNormalizado = entidad.nombre.Trim();
+            var existente = await _context.tipo_producto
+                .IgnoreQueryFilters()
+                .FirstOrDefaultAsync(t => (entidad.id > 0 && t.id == entidad.id) ||
+                                          t.nombre.ToLower() == nombreNormalizado.ToLower());
+
+            if (existente != null)
+            {
+                if (existente.activo)
+                {
+                    throw new ArgumentException($"Ya existe un tipo de producto con el nombre '{entidad.nombre}'.");
+                }
+
+                existente.categoria = entidad.categoria;
+                existente.clase = entidad.clase;
+                existente.nombre = nombreNormalizado;
+                existente.tipologia = entidad.tipologia;
+                existente.activo = true;
+                await _context.SaveChangesAsync();
+                entidad.id = existente.id;
+                return;
+            }
+
+            entidad.nombre = nombreNormalizado;
             entidad.activo = true;
             await _context.tipo_producto.AddAsync(entidad);
             await _context.SaveChangesAsync();
         }
 
-        public async Task ActualizarAsync(tipo_producto entidad)
+        public async Task ActualizarAsync(TipoProducto entidad)
         {
             _context.tipo_producto.Update(entidad);
             await _context.SaveChangesAsync();
@@ -48,4 +72,3 @@ namespace mapa_conocimiento_api.Repositorios
         }
     }
 }
-

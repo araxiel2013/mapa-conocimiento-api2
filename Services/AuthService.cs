@@ -1,31 +1,28 @@
-using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using mapa_conocimiento_api.Models;
 using mapa_conocimiento_api.Peticiones;
+using mapa_conocimiento_api.Repositorios;
 
 namespace mapa_conocimiento_api.Servicios
 {
     public class AuthService : IAuthService
     {
-        private readonly postgresContext _context;
+        private readonly IUsuarioRepository _usuarioRepository;
         private readonly IConfiguration _configuration;
 
-        public AuthService(postgresContext context, IConfiguration configuration)
+        public AuthService(IUsuarioRepository usuarioRepository, IConfiguration configuration)
         {
-            _context = context;
+            _usuarioRepository = usuarioRepository;
             _configuration = configuration;
         }
 
         public async Task<LoginResponse?> AutenticarAsync(LoginRequest peticion)
         {
-            // 1. Buscamos el usuario en BD incluyendo sus roles a través de la tabla puente
-            var usuario = await _context.usuario
-                .Include(u => u.RolesUsuario)
-                    .ThenInclude(ru => ru.RolRelacionado)
-                .FirstOrDefaultAsync(u => u.username == peticion.username);
+            // 1. Buscamos el usuario en BD a través del repositorio incluyendo sus roles
+            var usuario = await _usuarioRepository.ObtenerPorUsernameConRolesAsync(peticion.username);
 
             // 2. Comparamos la contraseña en texto plano contra el Hash BCrypt de la base de datos
             if (usuario == null || !BCrypt.Net.BCrypt.Verify(peticion.password, usuario.password))
@@ -53,15 +50,31 @@ namespace mapa_conocimiento_api.Servicios
 
             // 4. Firmamos matemáticamente el Token
             var jwtSettings = _configuration.GetSection("JwtSettings");
-            var secretKey = jwtSettings.GetValue<string>("Key");
+            var secretKey = _configuration["JwtSettings:Key"]
+                ?? _configuration["JwtSettings__Key"]
+                ?? _configuration["JWT_SECRET_KEY"]
+                ?? jwtSettings.GetValue<string>("Key")
+                ?? throw new InvalidOperationException("La clave secreta JWT (JwtSettings:Key o JwtSettings__Key) no está configurada.");
+
+            var issuer = _configuration["JwtSettings:Issuer"]
+                ?? _configuration["JwtSettings__Issuer"]
+                ?? jwtSettings.GetValue<string>("Issuer")
+                ?? "MapaConocimientoAPI";
+
+            var audience = _configuration["JwtSettings:Audience"]
+                ?? _configuration["JwtSettings__Audience"]
+                ?? jwtSettings.GetValue<string>("Audience")
+                ?? "MapaConocimientoReactClient";
+
+            var durationMinutes = jwtSettings.GetValue<double?>("DurationInMinutes") ?? 480;
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey!));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
             var tokenDescriptor = new JwtSecurityToken(
-                issuer: jwtSettings.GetValue<string>("Issuer"),
-                audience: jwtSettings.GetValue<string>("Audience"),
+                issuer: issuer,
+                audience: audience,
                 claims: claims,
-                expires: DateTime.UtcNow.AddMinutes(jwtSettings.GetValue<double>("DurationInMinutes")),
+                expires: DateTime.UtcNow.AddMinutes(durationMinutes),
                 signingCredentials: creds
             );
 
