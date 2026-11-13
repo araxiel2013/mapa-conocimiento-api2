@@ -1,31 +1,45 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 80" width="320" height="80" fill="none">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 460 90" width="460" height="90" fill="none">
   <!-- Sello Franciscano USB -->
-  <g transform="translate(10, 8)">
+  <g transform="translate(15, 10)">
     <!-- Círculo exterior -->
-    <circle cx="32" cy="32" r="30" stroke="#Eb8600" stroke-width="2.5" fill="#0D274C"/>
-    <!-- Círculo interior -->
-    <circle cx="32" cy="32" r="25" stroke="#FFFFFF" stroke-width="1.2" stroke-dasharray="2 1.5"/>
+    <circle cx="35" cy="35" r="33" stroke="#Eb8600" stroke-width="3" fill="#0D274C"/>
+    <!-- Círculo interior punteado -->
+    <circle cx="35" cy="35" r="27" stroke="#FFFFFF" stroke-width="1.5" stroke-dasharray="3 2"/>
     
-    <!-- Cruz de San Buenaventura estilizada -->
-    <path d="M32 14 V50" stroke="#Eb8600" stroke-width="3.5" stroke-linecap="round"/>
-    <path d="M19 26 H45" stroke="#Eb8600" stroke-width="3.5" stroke-linecap="round"/>
-    <circle cx="32" cy="26" r="3.5" fill="#FFFFFF"/>
+    <!-- Cruz de San Buenaventura -->
+    <path d="M35 15 V55" stroke="#Eb8600" stroke-width="4" stroke-linecap="round"/>
+    <path d="M21 28 H49" stroke="#Eb8600" stroke-width="4" stroke-linecap="round"/>
+    <circle cx="35" cy="28" r="4" fill="#FFFFFF"/>
     
-    <!-- Brazos cruzados / franciscanos estilizados -->
-    <path d="M22 42 C 26 46, 38 46, 42 42" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" fill="none"/>
-    <circle cx="21" cy="41" r="1.5" fill="#Eb8600"/>
-    <circle cx="43" cy="41" r="1.5" fill="#Eb8600"/>
+    <!-- Brazos franciscanos cruzados -->
+    <path d="M24 45 C 29 50, 41 50, 46 45" stroke="#FFFFFF" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+    <circle cx="23" cy="44" r="2" fill="#Eb8600"/>
+    <circle cx="47" cy="44" r="2" fill="#Eb8600"/>
     
     <!-- Estrellas franciscanas -->
-    <polygon points="32,9 33,12 36,12 33.5,13.5 34.5,16 32,14.5 29.5,16 30.5,13.5 28,12 31,12" fill="#FFFFFF"/>
-    <polygon points="12,32 13,34 15,34 13.5,35 14,37 12,36 10,37 10.5,35 9,34 11,34" fill="#FFFFFF"/>
-    <polygon points="52,32 53,34 55,34 53.5,35 54,37 52,36 50,37 50.5,35 49,34 51,34" fill="#FFFFFF"/>
+    <polygon points="35,10 36.5,13.5 40,13.5 37,15.5 38.5,19 35,17 31.5,19 33,15.5 30,13.5 33.5,13.5" fill="#FFFFFF"/>
+    <polygon points="13,35 14.5,37 17,37 15,38.5 16,41 13,39.5 10,41 11,38.5 9,37 11.5,37" fill="#FFFFFF"/>
+    <polygon points="57,35 58.5,37 61,37 59,38.5 60,41 57,39.5 54,41 55,38.5 53,37 55.5,37" fill="#FFFFFF"/>
   </g>
 
-  <!-- Tipografía Oficial Universidad de San Buenaventura -->
-  <g transform="translate(85, 20)">
-    <text x="0" y="14" fill="#FFFFFF" font-family="'Helvetica Neue', Arial, sans-serif" font-size="11" font-weight="700" letter-spacing="2.5">UNIVERSIDAD DE</text>
-    <text x="0" y="32" fill="#Eb8600" font-family="'Helvetica Neue', Arial, sans-serif" font-size="17" font-weight="900" letter-spacing="1.2">SAN BUENAVENTURA</text>
-    <text x="0" y="46" fill="#94A3B8" font-family="'Helvetica Neue', Arial, sans-serif" font-size="9" font-weight="600" letter-spacing="3">COLOMBIA · MULTICAMPUS</text>
+  <!-- Tipografía Principal Universidad de San Buenaventura -->
+  <g transform="translate(100, 22)">
+    <text x="0" y="16" fill="#FFFFFF" font-family="'Helvetica Neue', Arial, sans-serif" font-size="13" font-weight="800" letter-spacing="2">UNIVERSIDAD DE</text>
+    <text x="0" y="37" fill="#Eb8600" font-family="'Helvetica Neue', Arial, sans-serif" font-size="20" font-weight="900" letter-spacing="1">SAN BUENAVENTURA</text>
+    <text x="0" y="53" fill="#CBD5E1" font-family="'Helvetica Neue', Arial, sans-serif" font-size="10.5" font-weight="700" letter-spacing="2.5">COLOMBIA · SEDES MULTICAMPUS</text>
+  </g>
+
+  <!-- Divisor Vertical -->
+  <line x1="365" y1="18" x2="365" y2="72" stroke="#FFFFFF" stroke-opacity="0.3" stroke-width="1.5" />
+
+  <!-- Badge Acreditación de Alta Calidad -->
+  <g transform="translate(378, 20)">
+    <!-- Ícono Árbol / Acreditación estilizado -->
+    <circle cx="16" cy="18" r="14" stroke="#Eb8600" stroke-width="2" fill="#0D274C" />
+    <path d="M16 10 V26 M11 16 L16 12 L21 16 M12 21 L16 17 L20 21" stroke="#FFFFFF" stroke-width="1.5" stroke-linecap="round" fill="none" />
+    
+    <text x="36" y="14" fill="#FFFFFF" font-family="'Helvetica Neue', Arial, sans-serif" font-size="8.5" font-weight="800" letter-spacing="0.5">ACREDITACIÓN INSTITUCIONAL</text>
+    <text x="36" y="25" fill="#Eb8600" font-family="'Helvetica Neue', Arial, sans-serif" font-size="9.5" font-weight="900" letter-spacing="0.5">DE ALTA CALIDAD</text>
+    <text x="36" y="36" fill="#94A3B8" font-family="'Helvetica Neue', Arial, sans-serif" font-size="8" font-weight="700" letter-spacing="1">MULTICAMPUS</text>
   </g>
 </svg>
