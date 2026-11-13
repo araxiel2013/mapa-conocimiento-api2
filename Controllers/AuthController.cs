@@ -38,5 +38,31 @@ namespace mapa_conocimiento_api.Controllers
                 usuario = resultado.usuario
             });
         }
+
+        [HttpPost("recuperar-contrasena")]
+        public async Task<IActionResult> RecuperarContrasena([FromBody] RecuperarContrasenaRequest peticion)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var (exitoso, mensaje) = await _authService.RecuperarContrasenaAsync(peticion);
+
+            if (!exitoso)
+            {
+                return BadRequest(new 
+                { 
+                    estado = 400, 
+                    mensaje 
+                });
+            }
+
+            return Ok(new 
+            { 
+                estado = 200, 
+                mensaje 
+            });
+        }
     }
 }

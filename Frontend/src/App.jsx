@@ -30,7 +30,7 @@ function App() {
           <Route path="/nosotros" element={<Nosotros />} />
           <Route path="/servicios" element={<Servicios />} />
           <Route path="/soporte" element={<Soporte />} />
-          <Route path="/contacto" element={<Contacto />} />
+          <Route path="/contacto" element={<Navigate to="/soporte" replace />} />
         </Route>
 
         {/* Ruta de Inicio de Sesión Institucional */}

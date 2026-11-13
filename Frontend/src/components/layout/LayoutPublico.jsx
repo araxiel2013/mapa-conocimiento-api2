@@ -1,10 +1,10 @@
 import React, { useState, useContext } from 'react';
 import { Outlet, NavLink, Link, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../../context/AuthContext';
+import LogoInstitucional from '../ui/LogoInstitucional';
 import { 
   Menu, 
   X, 
-  GraduationCap, 
   LogIn, 
   LayoutDashboard, 
   Globe, 
@@ -25,7 +25,6 @@ export default function LayoutPublico() {
     { ruta: '/nosotros', etiqueta: 'Nosotros' },
     { ruta: '/servicios', etiqueta: 'Servicios' },
     { ruta: '/soporte', etiqueta: 'Soporte' },
-    { ruta: '/contacto', etiqueta: 'Contacto' },
   ];
 
   const alternarMenu = () => setMenuAbierto(!menuAbierto);
@@ -39,21 +38,20 @@ export default function LayoutPublico() {
       <header className="sticky top-0 z-50 bg-[#0D274C] text-white shadow-md border-b border-slate-700/50 backdrop-blur-md">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-20">
-            {/* Logotipo e Identidad */}
+            {/* Logotipo Oficial Institucional */}
             <Link 
               to="/" 
-              className="flex items-center gap-3 group transition-transform duration-200 hover:scale-[1.01]"
+              className="flex items-center gap-4 group transition-transform duration-200 hover:scale-[1.01]"
               onClick={cerrarMenu}
             >
-              <div className="w-12 h-12 rounded-xl bg-gradient-to-tr from-[#Eb8600] to-amber-500 flex items-center justify-center shadow-lg shadow-amber-900/20 group-hover:shadow-amber-500/30 transition-all">
-                <GraduationCap size={28} className="text-white" />
-              </div>
-              <div className="flex flex-col">
-                <span className="font-extrabold text-xl tracking-tight leading-tight text-white">
+              <LogoInstitucional variante="blanco" className="h-10 sm:h-12 w-auto" />
+              <div className="h-7 w-[1px] bg-white/25 hidden lg:block"></div>
+              <div className="flex flex-col hidden sm:flex">
+                <span className="font-extrabold text-base sm:text-lg tracking-tight leading-tight text-white group-hover:text-amber-400 transition">
                   Mapa de Conocimiento
                 </span>
-                <span className="text-xs text-amber-400 font-semibold uppercase tracking-wider">
-                  Universidad de San Buenaventura
+                <span className="text-[10px] sm:text-[11px] text-amber-400 font-bold uppercase tracking-wider">
+                  Sistema Multicampus · USB
                 </span>
               </div>
             </Link>
@@ -179,16 +177,10 @@ export default function LayoutPublico() {
             {/* Columna 1: Identidad Institucional */}
             <div className="space-y-4">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-lg bg-[#Eb8600] flex items-center justify-center shadow-md">
-                  <GraduationCap size={24} className="text-white" />
-                </div>
-                <div className="flex flex-col">
-                  <span className="font-extrabold text-lg text-white">Mapa de Conocimiento</span>
-                  <span className="text-[11px] text-amber-400 font-semibold uppercase">USB Colombia</span>
-                </div>
+                <LogoInstitucional variante="blanco" className="h-11 w-auto" />
               </div>
-              <p className="text-sm text-slate-400 leading-relaxed">
-                Plataforma de inteligencia y trazabilidad analítica de la producción investigativa, 
+              <p className="text-sm text-slate-300 leading-relaxed">
+                Plataforma de inteligencia y trazabilidad analítica de la producción investigativa de la Universidad de San Buenaventura, 
                 articulando proyectos, docentes, áreas del saber y los Objetivos de Desarrollo Sostenible (ODS).
               </p>
               <div className="pt-2 text-xs text-slate-400 flex items-center gap-2">

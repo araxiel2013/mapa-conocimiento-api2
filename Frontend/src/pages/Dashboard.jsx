@@ -33,7 +33,6 @@ import FormProyecto from '../components/formularios/FormProyecto';
 import FormTipoProducto from '../components/formularios/FormTipoProducto';
 import FormDocente from '../components/formularios/FormDocente';
 import FormProducto from '../components/formularios/FormProducto';
-import FormTablasPuente from '../components/formularios/FormTablasPuente';
 
 const modulosFormularios = [
   { id: 'proyecto', label: 'Datos Básicos (Proyecto)' },
@@ -44,9 +43,8 @@ const modulosFormularios = [
   { id: 'lineaInvestigacion', label: 'Líneas de Investigación' },
   { id: 'tipoProducto', label: 'Tipos de Producto' },
   { id: 'aliado', label: 'Aliados' },
-  { id: 'docente', label: 'Docentes (Fase 2)' },
-  { id: 'producto', label: 'Productos (Fase 2)' },
-  { id: 'tablasPuente', label: 'Tablas Puente / Asociaciones' },
+  { id: 'docente', label: 'Docentes' },
+  { id: 'producto', label: 'Productos' },
 ];
 
 export default function Dashboard() {
@@ -143,31 +141,36 @@ export default function Dashboard() {
       case 'aliado': return <FormAliado />;
       case 'docente': return <FormDocente />;
       case 'producto': return <FormProducto />;
-      case 'tablasPuente': return <FormTablasPuente />;
       default: return <div className="text-xl">Seleccione un módulo</div>;
     }
   };
 
   const menuNavegacionFormularios = (
-    <div className="flex flex-col text-[18px] font-bold text-white w-full h-full border-r border-gris-2">
+    <div className="flex flex-col w-full h-full pr-1">
       {modulosFormularios.map((mod) => {
         const isActivo = formularioActivo === mod.id;
         return (
-          <div key={mod.id} className="w-full">
+          <div key={mod.id} className="w-full my-0.5">
             <button
               onClick={() => setFormularioActivo(mod.id)}
-              className={`w-full flex items-center justify-between px-6 py-3.5 transition-all duration-200 cursor-pointer text-left ${
+              className={`w-full flex items-center justify-between px-6 py-3.5 transition-all duration-200 cursor-pointer text-left rounded-r-xl ${
                 isActivo 
-                  ? 'bg-white/15 text-azul-1' 
-                  : 'text-slate-300 hover:bg-white/5'
+                  ? 'bg-[#0D274C] text-white shadow-md border-l-4 border-[#Eb8600]' 
+                  : 'text-slate-700 hover:text-[#0D274C] hover:bg-slate-200/70'
               }`}
             >
-              <span className={isActivo ? 'text-azul-1' : 'text-slate-300'}>{mod.label}</span>
-              {isActivo ? <ChevronDown size={18} className="text-azul-1" /> : <ChevronRight size={18} className="text-slate-400" />}
+              <span className={`text-[15px] ${isActivo ? 'font-bold text-white' : 'font-semibold text-slate-700'}`}>
+                {mod.label}
+              </span>
+              {isActivo ? (
+                <ChevronDown size={18} className="text-[#Eb8600] shrink-0 ml-2" />
+              ) : (
+                <ChevronRight size={18} className="text-slate-400 shrink-0 ml-2" />
+              )}
             </button>
             {isActivo && (
-              <div className="bg-white/10 px-6 py-1.5 text-xs text-slate-300 font-normal flex flex-col gap-1">
-                <span className="text-white opacity-80 pl-2">Información requerida</span>
+              <div className="bg-[#0D274C] px-6 pb-2.5 pt-0.5 text-xs text-amber-200/90 font-medium flex flex-col rounded-b-xl -mt-1 mb-1">
+                <span className="pl-1">Información requerida</span>
               </div>
             )}
           </div>
@@ -240,7 +243,7 @@ export default function Dashboard() {
               <h1 className="text-2xl sm:text-3xl font-black text-[#0D274C]">
                 Tablero Gerencial de Investigación y Producción Científica
               </h1>
-              <p className="text-xs sm:text-sm text-slate-500 mt-1">
+              <p className="text-xs sm:text-sm text-slate-700 font-medium mt-1">
                 Métricas agregadas en tiempo real de proyectos, productos, docentes y su vinculación con los ODS.
               </p>
             </div>
@@ -289,7 +292,7 @@ export default function Dashboard() {
               titulo="Presupuesto Histórico"
               valor={kpis.presupuesto_total_historico}
               icono={Coins}
-              color="verde"
+              color="dorado"
               esMoneda={true}
               descripcion="Fondos asignados a investigación"
             />
@@ -297,7 +300,7 @@ export default function Dashboard() {
               titulo="Productos Entregados"
               valor={kpis.total_productos_entregados}
               icono={FileCheck2}
-              color="morado"
+              color="corporativo"
               descripcion="Artículos, software y patentes"
             />
           </div>
@@ -337,7 +340,8 @@ export default function Dashboard() {
               titulo="4. Proyectos por Línea de Investigación"
               descripcion="Tendencia y volumen temático en los programas académicos bonaventurianos"
               datos={proyectosPorLinea}
-              colorLinea="#10B981"
+              colorLinea="#0D274C"
+              colorPunto="#Eb8600"
               altura={360}
             />
           </div>
