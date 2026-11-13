@@ -2,6 +2,7 @@ import React, { useContext } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import { LogOut, Users, FileText } from 'lucide-react';
+import LogoInstitucional from './ui/LogoInstitucional';
 
 const Navbar = () => {
     const { user, logout } = useContext(AuthContext);
@@ -16,31 +17,27 @@ const Navbar = () => {
     const esAdmin = user?.roles?.includes('Administrador');
 
     return (
-        <header className="w-full bg-azul-2 text-white shadow-md border-b border-black/10 sticky top-0 z-50">
-            <div className="max-w-[1370px] mx-auto px-6 py-2.5 flex justify-between items-center">
+        <header className="w-full bg-[#0D274C] text-white shadow-md border-b border-slate-700/60 sticky top-0 z-50">
+            <div className="max-w-[1370px] mx-auto px-4 sm:px-6 py-2.5 flex justify-between items-center">
                 {/* Logo institucional y Título */}
                 <div className="flex items-center gap-4">
-                    <Link to="/dashboard" className="flex items-center gap-4 group">
-                        <img 
-                            src="https://usb.edu.co/wp-content/uploads/2021/06/Logo-USB-RECTORIA.png" 
-                            alt="Universidad de San Buenaventura" 
-                            className="h-[38px] object-contain filter brightness-0 invert" 
-                        />
-                        <div className="h-5 w-[1px] bg-white/20 hidden sm:block"></div>
-                        <span className="text-lg font-bold tracking-tight text-white group-hover:text-azul-1 transition font-['Helvetica_Neue',_Helvetica,_Arial,_sans-serif]">
+                    <Link to="/dashboard" className="flex items-center gap-3 group">
+                        <LogoInstitucional variante="blanco" className="h-9 sm:h-10" />
+                        <div className="h-6 w-[1px] bg-white/25 hidden md:block"></div>
+                        <span className="text-base sm:text-lg font-black tracking-tight text-white group-hover:text-amber-400 transition hidden lg:inline-block">
                             Mapa de Conocimiento Multicampus
                         </span>
                     </Link>
                 </div>
 
                 {/* Navegación y Sesión */}
-                <div className="flex items-center gap-4">
+                <div className="flex items-center gap-3 sm:gap-4">
                     <Link 
                         to="/dashboard" 
-                        className={`flex items-center gap-2 text-sm font-semibold transition px-4 py-1.5 rounded-full ${
+                        className={`flex items-center gap-2 text-xs sm:text-sm font-bold transition px-4 py-2 rounded-xl shadow-xs ${
                             location.pathname === '/dashboard' 
-                                ? 'bg-white/20 text-azul-1 border border-azul-1/40' 
-                                : 'text-gray-200 hover:text-white hover:bg-white/10'
+                                ? 'bg-[#Eb8600] text-white' 
+                                : 'text-slate-200 hover:text-white hover:bg-white/10'
                         }`}
                     >
                         <FileText size={16} />
@@ -50,10 +47,10 @@ const Navbar = () => {
                     {esAdmin && (
                         <Link 
                             to="/usuarios" 
-                            className={`flex items-center gap-2 text-sm font-semibold transition px-4 py-1.5 rounded-full shadow-sm cursor-pointer ${
+                            className={`flex items-center gap-2 text-xs sm:text-sm font-bold transition px-4 py-2 rounded-xl shadow-xs cursor-pointer ${
                                 location.pathname === '/usuarios'
-                                    ? 'bg-naranja text-white'
-                                    : 'bg-naranja/90 hover:bg-naranja text-white'
+                                    ? 'bg-[#Eb8600] text-white'
+                                    : 'bg-white/10 hover:bg-white/20 text-white border border-white/20'
                             }`}
                         >
                             <Users size={16} />
@@ -61,15 +58,15 @@ const Navbar = () => {
                         </Link>
                     )}
 
-                    <div className="border-l border-white/20 pl-4 flex items-center gap-3">
+                    <div className="border-l border-white/20 pl-3 sm:pl-4 flex items-center gap-3">
                         <div className="text-right hidden sm:block">
-                            <span className="text-xs text-gray-400 block leading-tight">Usuario</span>
-                            <span className="text-sm font-bold text-white">{user?.username || 'Conectado'}</span>
+                            <span className="text-[11px] text-slate-300 font-medium block leading-tight">Usuario</span>
+                            <span className="text-xs sm:text-sm font-extrabold text-white">{user?.username || 'Conectado'}</span>
                         </div>
                         <button 
                             onClick={handleLogout} 
                             title="Cerrar sesión"
-                            className="bg-red-600 hover:bg-red-700 text-white font-medium px-3.5 py-1.5 rounded-full text-xs sm:text-sm transition cursor-pointer flex items-center gap-1.5 shadow"
+                            className="bg-rose-600 hover:bg-rose-700 text-white font-bold px-3.5 py-1.5 rounded-xl text-xs sm:text-sm transition cursor-pointer flex items-center gap-1.5 shadow-sm"
                         >
                             <LogOut size={14} />
                             <span>Salir</span>

@@ -243,7 +243,7 @@ export default function Dashboard() {
               <h1 className="text-2xl sm:text-3xl font-black text-[#0D274C]">
                 Tablero Gerencial de Investigación y Producción Científica
               </h1>
-              <p className="text-xs sm:text-sm text-slate-500 mt-1">
+              <p className="text-xs sm:text-sm text-slate-700 font-medium mt-1">
                 Métricas agregadas en tiempo real de proyectos, productos, docentes y su vinculación con los ODS.
               </p>
             </div>
@@ -292,7 +292,7 @@ export default function Dashboard() {
               titulo="Presupuesto Histórico"
               valor={kpis.presupuesto_total_historico}
               icono={Coins}
-              color="verde"
+              color="dorado"
               esMoneda={true}
               descripcion="Fondos asignados a investigación"
             />
@@ -300,7 +300,7 @@ export default function Dashboard() {
               titulo="Productos Entregados"
               valor={kpis.total_productos_entregados}
               icono={FileCheck2}
-              color="morado"
+              color="corporativo"
               descripcion="Artículos, software y patentes"
             />
           </div>
@@ -340,7 +340,8 @@ export default function Dashboard() {
               titulo="4. Proyectos por Línea de Investigación"
               descripcion="Tendencia y volumen temático en los programas académicos bonaventurianos"
               datos={proyectosPorLinea}
-              colorLinea="#10B981"
+              colorLinea="#0D274C"
+              colorPunto="#Eb8600"
               altura={360}
             />
           </div>

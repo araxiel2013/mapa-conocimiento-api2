@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import api from '../api/axiosConfig';
 import { Users, ArrowLeft, ShieldCheck, UserCheck, UserX, UserPlus, Trash2, X, AlertCircle, CheckCircle2 } from 'lucide-react';
+import LogoInstitucional from '../components/ui/LogoInstitucional';
 
 const ROLES_DISPONIBLES = [
     { id: 1, nombre: 'Administrador' },
@@ -128,16 +129,7 @@ const PanelUsuarios = () => {
             {/* Header con Logos Institucionales */}
             <div className="w-full max-w-[1370px] flex flex-col items-center mb-6 relative">
                 <div className="flex items-center justify-center gap-10 mb-6 h-[80px]">
-                    <img 
-                        src="https://usb.edu.co/wp-content/uploads/2021/06/Logo-USB-RECTORIA.png" 
-                        alt="Universidad de San Buenaventura" 
-                        className="h-full object-contain filter brightness-0 invert" 
-                    />
-                    <img 
-                        src="https://usb.edu.co/wp-content/uploads/2021/07/Logo-blanco-ACREDITACION.png" 
-                        alt="Acreditación Institucional de Alta Calidad Multicampus" 
-                        className="h-[80%] object-contain" 
-                    />
+                    <LogoInstitucional variante="blanco" className="h-[75px]" />
                 </div>
 
                 <div className="flex justify-between items-center w-full">

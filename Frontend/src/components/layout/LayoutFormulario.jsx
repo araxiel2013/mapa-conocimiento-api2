@@ -1,4 +1,5 @@
 import React from 'react';
+import LogoInstitucional from '../ui/LogoInstitucional';
 
 export default function LayoutFormulario({ children, menu, title = "Mapa de Conocimiento Multicampus", showGuardar = false, onGuardar }) {
   return (
@@ -7,18 +8,9 @@ export default function LayoutFormulario({ children, menu, title = "Mapa de Cono
       {/* Header Container */}
       <div className="w-full max-w-[1370px] flex flex-col items-center mb-6 relative">
         
-        {/* Logos */}
-        <div className="flex items-center justify-center gap-10 mb-8 h-[100px]">
-          <img 
-            src="https://usb.edu.co/wp-content/uploads/2021/06/Logo-USB-RECTORIA.png" 
-            alt="Universidad de San Buenaventura" 
-            className="h-full object-contain filter brightness-0 invert" 
-          />
-          <img 
-            src="https://usb.edu.co/wp-content/uploads/2021/07/Logo-blanco-ACREDITACION.png" 
-            alt="Acreditación Institucional de Alta Calidad Multicampus" 
-            className="h-[80%] object-contain" 
-          />
+        {/* Logos Oficiales USB */}
+        <div className="flex items-center justify-center gap-10 mb-8 h-[90px]">
+          <LogoInstitucional variante="blanco" className="h-[80px]" />
         </div>
         
         {/* Title & Guardar Button */}

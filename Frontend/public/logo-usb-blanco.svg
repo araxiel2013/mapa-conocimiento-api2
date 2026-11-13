@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 80" width="320" height="80" fill="none">
+  <!-- Sello Franciscano USB -->
+  <g transform="translate(10, 8)">
+    <!-- Círculo exterior -->
+    <circle cx="32" cy="32" r="30" stroke="#Eb8600" stroke-width="2.5" fill="#0D274C"/>
+    <!-- Círculo interior -->
+    <circle cx="32" cy="32" r="25" stroke="#FFFFFF" stroke-width="1.2" stroke-dasharray="2 1.5"/>
+    
+    <!-- Cruz de San Buenaventura estilizada -->
+    <path d="M32 14 V50" stroke="#Eb8600" stroke-width="3.5" stroke-linecap="round"/>
+    <path d="M19 26 H45" stroke="#Eb8600" stroke-width="3.5" stroke-linecap="round"/>
+    <circle cx="32" cy="26" r="3.5" fill="#FFFFFF"/>
+    
+    <!-- Brazos cruzados / franciscanos estilizados -->
+    <path d="M22 42 C 26 46, 38 46, 42 42" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" fill="none"/>
+    <circle cx="21" cy="41" r="1.5" fill="#Eb8600"/>
+    <circle cx="43" cy="41" r="1.5" fill="#Eb8600"/>
+    
+    <!-- Estrellas franciscanas -->
+    <polygon points="32,9 33,12 36,12 33.5,13.5 34.5,16 32,14.5 29.5,16 30.5,13.5 28,12 31,12" fill="#FFFFFF"/>
+    <polygon points="12,32 13,34 15,34 13.5,35 14,37 12,36 10,37 10.5,35 9,34 11,34" fill="#FFFFFF"/>
+    <polygon points="52,32 53,34 55,34 53.5,35 54,37 52,36 50,37 50.5,35 49,34 51,34" fill="#FFFFFF"/>
+  </g>
+
+  <!-- Tipografía Oficial Universidad de San Buenaventura -->
+  <g transform="translate(85, 20)">
+    <text x="0" y="14" fill="#FFFFFF" font-family="'Helvetica Neue', Arial, sans-serif" font-size="11" font-weight="700" letter-spacing="2.5">UNIVERSIDAD DE</text>
+    <text x="0" y="32" fill="#Eb8600" font-family="'Helvetica Neue', Arial, sans-serif" font-size="17" font-weight="900" letter-spacing="1.2">SAN BUENAVENTURA</text>
+    <text x="0" y="46" fill="#94A3B8" font-family="'Helvetica Neue', Arial, sans-serif" font-size="9" font-weight="600" letter-spacing="3">COLOMBIA · MULTICAMPUS</text>
+  </g>
+</svg>

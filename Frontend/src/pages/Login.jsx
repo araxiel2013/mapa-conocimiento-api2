@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import api from '../api/axiosConfig';
 import { AuthContext } from '../context/AuthContext';
 import { Lock, User } from 'lucide-react';
+import LogoInstitucional from '../components/ui/LogoInstitucional';
 
 const Login = () => {
     const [credenciales, setCredenciales] = useState({ username: '', password: '' });
@@ -37,17 +38,8 @@ const Login = () => {
         <div className="min-h-screen bg-gris-2 flex flex-col items-center justify-center py-10 px-4 font-sans">
             {/* Contenedor Superior con Logos Oficiales USB */}
             <div className="w-full max-w-[500px] flex flex-col items-center mb-8">
-                <div className="flex items-center justify-center gap-8 mb-6 h-[90px]">
-                    <img 
-                        src="https://usb.edu.co/wp-content/uploads/2021/06/Logo-USB-RECTORIA.png" 
-                        alt="Universidad de San Buenaventura" 
-                        className="h-full object-contain filter brightness-0 invert" 
-                    />
-                    <img 
-                        src="https://usb.edu.co/wp-content/uploads/2021/07/Logo-blanco-ACREDITACION.png" 
-                        alt="Acreditación Institucional de Alta Calidad Multicampus" 
-                        className="h-[75%] object-contain" 
-                    />
+                <div className="flex items-center justify-center gap-8 mb-6 h-[80px]">
+                    <LogoInstitucional variante="blanco" className="h-[75px]" />
                 </div>
                 
                 <h1 className="text-white text-[34px] sm:text-[40px] font-bold tracking-tight text-center font-['Helvetica_Neue',_Helvetica,_Arial,_sans-serif] leading-tight">
