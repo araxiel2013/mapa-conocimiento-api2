@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -12,11 +13,13 @@ namespace mapa_conocimiento_api.Servicios
     {
         private readonly IUsuarioRepository _usuarioRepository;
         private readonly IConfiguration _configuration;
+        private readonly postgresContext _context;
 
-        public AuthService(IUsuarioRepository usuarioRepository, IConfiguration configuration)
+        public AuthService(IUsuarioRepository usuarioRepository, IConfiguration configuration, postgresContext context)
         {
             _usuarioRepository = usuarioRepository;
             _configuration = configuration;
+            _context = context;
         }
 
         public async Task<LoginResponse?> AutenticarAsync(LoginRequest peticion)
