@@ -32,38 +32,38 @@ export default function Inicio() {
       icono: Target,
       titulo: 'Alineación Estratégica con ODS',
       descripcion: 'Vincula cada proyecto investigativo con los 17 Objetivos de Desarrollo Sostenible de las Naciones Unidas, visibilizando el impacto social, ecológico y económico de la universidad.',
-      color: 'bg-emerald-500'
+      color: 'bg-[#Eb8600]'
     },
     {
       icono: Award,
       titulo: 'Modelo Oficial Minciencias',
       descripcion: 'Mapeo riguroso de productos científicos categorizados en Generación de Nuevo Conocimiento, Desarrollo Tecnológico, Apropiación Social y Formación del Recurso Humano.',
-      color: 'bg-amber-500'
+      color: 'bg-[#0D274C]'
     },
     {
       icono: Users,
       titulo: 'Red de Docentes y Alianzas',
       descripcion: 'Conecta grupos de investigación, docentes con sus respectivos perfiles CvLAC y aliados estratégicos del sector público y privado en esquemas de cooperación n-arios.',
-      color: 'bg-blue-600'
+      color: 'bg-[#D97706]'
     },
     {
       icono: BarChart3,
       titulo: 'Analítica Multicampus',
       descripcion: 'Consultas relacionales complejas y dashboards en tiempo real para la toma de decisiones basada en evidencia por parte de decanaturas y la Vicerrectoría.',
-      color: 'bg-indigo-600'
+      color: 'bg-[#1E3A8A]'
     }
   ];
 
   return (
     <div className="flex flex-col">
       {/* =========================================================
-          HERO SECTION PRINCIPAL
+          HERO SECTION PRINCIPAL (COLORES INSTITUCIONALES USB)
       ========================================================= */}
-      <section className="relative overflow-hidden bg-gradient-to-b from-[#0D274C] via-[#0f2e5a] to-slate-900 text-white pt-16 pb-24 lg:pt-24 lg:pb-32">
-        {/* Adorno visual de fondo */}
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-full opacity-10 pointer-events-none">
+      <section className="relative overflow-hidden bg-[#0D274C] text-white pt-16 pb-24 lg:pt-24 lg:pb-32 border-b-4 border-[#Eb8600]">
+        {/* Adorno visual de fondo institucional */}
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-full opacity-15 pointer-events-none">
           <div className="absolute -top-24 -left-24 w-96 h-96 rounded-full bg-[#Eb8600] blur-3xl"></div>
-          <div className="absolute top-1/2 -right-24 w-96 h-96 rounded-full bg-cyan-400 blur-3xl"></div>
+          <div className="absolute top-1/2 -right-24 w-96 h-96 rounded-full bg-[#1E3A8A] blur-3xl"></div>
         </div>
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
@@ -120,15 +120,15 @@ export default function Inicio() {
             {estadisticas.map((stat, idx) => (
               <div 
                 key={idx}
-                className="bg-white/10 backdrop-blur-md border border-white/15 rounded-2xl p-6 text-center hover:bg-white/15 transition-all duration-200 shadow-lg"
+                className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-6 text-center hover:bg-white/15 hover:border-[#Eb8600] transition-all duration-200 shadow-lg"
               >
-                <div className="text-3xl sm:text-4xl lg:text-5xl font-black text-amber-400 mb-2">
+                <div className="text-3xl sm:text-4xl lg:text-5xl font-black text-[#Eb8600] mb-2">
                   {stat.valor}
                 </div>
                 <div className="text-sm sm:text-base font-bold text-white mb-1">
                   {stat.etiqueta}
                 </div>
-                <div className="text-xs text-slate-300">
+                <div className="text-xs text-slate-200">
                   {stat.descripcion}
                 </div>
               </div>
@@ -297,10 +297,10 @@ export default function Inicio() {
               Ingresar al Módulo
             </Link>
             <Link
-              to="/contacto"
+              to="/soporte"
               className="w-full sm:w-auto bg-transparent hover:bg-white/10 text-white border border-white/30 px-8 py-3.5 rounded-xl font-semibold text-base transition-all duration-200"
             >
-              Contactar Soporte Técnico
+              Mesa de Ayuda y Soporte
             </Link>
           </div>
         </div>

@@ -93,6 +93,30 @@ namespace mapa_conocimiento_api.Servicios
             };
         }
 
-        public Task<LoginResponse?> LoginAsync(LoginRequest peticion) => AutenticarAsync(peticion);
+        public async Task<(bool exitoso, string mensaje)> RecuperarContrasenaAsync(RecuperarContrasenaRequest peticion)
+        {
+            var busqueda = peticion.identificador.Trim().ToLower();
+
+            // Buscamos el usuario por nombre de usuario o correo institucional
+            var usuario = await _context.usuario
+                .FirstOrDefaultAsync(u => u.username.ToLower() == busqueda || u.email.ToLower() == busqueda);
+
+            if (usuario == null)
+            {
+                return (false, "No se encontró ningún usuario registrado con el usuario o correo institucional proporcionado.");
+            }
+
+            if (!usuario.activo)
+            {
+                return (false, "La cuenta de usuario se encuentra inactiva. Contacte a la administración del sistema.");
+            }
+
+            // Hasheamos de forma segura la nueva contraseña mediante BCrypt
+            usuario.password = BCrypt.Net.BCrypt.HashPassword(peticion.nueva_contrasena);
+
+            await _context.SaveChangesAsync();
+
+            return (true, $"Contraseña actualizada con éxito para el usuario '{usuario.username}'. Ya puede iniciar sesión con su nueva clave.");
+        }
     }
 }

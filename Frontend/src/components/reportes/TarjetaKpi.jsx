@@ -22,31 +22,47 @@ export default function TarjetaKpi({
     return new Intl.NumberFormat('es-CO').format(val);
   };
 
+  // Paleta Institucional Universidad de San Buenaventura (USB)
   const estilosColor = {
     naranja: {
-      bgIcono: 'bg-amber-500/10 text-[#Eb8600]',
-      borde: 'hover:border-amber-400'
+      bgIcono: 'bg-[#Eb8600]/15 text-[#Eb8600]',
+      borde: 'hover:border-[#Eb8600]',
+      acento: 'border-t-4 border-[#Eb8600]'
     },
     azul: {
-      bgIcono: 'bg-blue-500/10 text-blue-600',
-      borde: 'hover:border-blue-400'
+      bgIcono: 'bg-[#0D274C]/15 text-[#0D274C]',
+      borde: 'hover:border-[#0D274C]',
+      acento: 'border-t-4 border-[#0D274C]'
     },
+    dorado: {
+      bgIcono: 'bg-[#D97706]/15 text-[#D97706]',
+      borde: 'hover:border-[#D97706]',
+      acento: 'border-t-4 border-[#D97706]'
+    },
+    corporativo: {
+      bgIcono: 'bg-[#1E3A8A]/15 text-[#1E3A8A]',
+      borde: 'hover:border-[#1E3A8A]',
+      acento: 'border-t-4 border-[#1E3A8A]'
+    },
+    // Compatibilidad con invocaciones previas
     verde: {
-      bgIcono: 'bg-emerald-500/10 text-emerald-600',
-      borde: 'hover:border-emerald-400'
+      bgIcono: 'bg-[#D97706]/15 text-[#D97706]',
+      borde: 'hover:border-[#D97706]',
+      acento: 'border-t-4 border-[#D97706]'
     },
     morado: {
-      bgIcono: 'bg-purple-500/10 text-purple-600',
-      borde: 'hover:border-purple-400'
+      bgIcono: 'bg-[#1E3A8A]/15 text-[#1E3A8A]',
+      borde: 'hover:border-[#1E3A8A]',
+      acento: 'border-t-4 border-[#1E3A8A]'
     }
   };
 
   const estiloSeleccionado = estilosColor[color] || estilosColor.azul;
 
   return (
-    <div className={`bg-white rounded-2xl p-6 border border-slate-200 shadow-sm ${estiloSeleccionado.borde} transition-all duration-200 flex flex-col justify-between group`}>
-      <div className="flex items-center justify-between mb-4">
-        <span className="text-xs font-bold uppercase tracking-wider text-slate-500">
+    <div className={`bg-white rounded-2xl p-6 border border-slate-200 shadow-sm ${estiloSeleccionado.acento} ${estiloSeleccionado.borde} transition-all duration-200 flex flex-col justify-between group`}>
+      <div className="flex items-center justify-between mb-3">
+        <span className="text-xs font-black uppercase tracking-wider text-slate-800">
           {titulo}
         </span>
         {Icono && (
@@ -61,7 +77,7 @@ export default function TarjetaKpi({
           {formatearValor(valor)}
         </div>
         {descripcion && (
-          <p className="text-xs text-slate-500 mt-1.5 leading-relaxed">
+          <p className="text-xs text-slate-700 font-medium mt-1.5 leading-relaxed">
             {descripcion}
           </p>
         )}
@@ -69,4 +85,3 @@ export default function TarjetaKpi({
     </div>
   );
 }
-

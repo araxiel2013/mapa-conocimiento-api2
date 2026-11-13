@@ -9,7 +9,7 @@ import {
   Tooltip, 
   Legend 
 } from 'recharts';
-import { BarChart3, AlertCircle } from 'lucide-react';
+import { BarChart3 } from 'lucide-react';
 
 export default function GraficoBarrasGenerico({ 
   titulo, 
@@ -17,7 +17,7 @@ export default function GraficoBarrasGenerico({
   datos = [], 
   horizontal = false, 
   colorBarra = '#Eb8600',
-  altura = 320,
+  altura = 340,
   esMoneda = false
 }) {
   // Regla de Oro Anti-Crash (Rúbrica Fase 4):
@@ -28,17 +28,17 @@ export default function GraficoBarrasGenerico({
     return (
       <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm flex flex-col justify-between h-full min-h-[300px]">
         <div>
-          <h3 className="text-base font-bold text-[#0D274C] mb-1">{titulo}</h3>
-          {descripcion && <p className="text-xs text-slate-500 mb-4">{descripcion}</p>}
+          <h3 className="text-base sm:text-lg font-black text-[#0D274C] mb-1">{titulo}</h3>
+          {descripcion && <p className="text-xs text-slate-700 font-medium mb-4">{descripcion}</p>}
         </div>
         <div className="flex-1 flex flex-col items-center justify-center p-8 text-center bg-slate-50 rounded-xl border border-dashed border-slate-200">
           <div className="w-12 h-12 rounded-full bg-slate-100 text-slate-400 flex items-center justify-center mb-3">
             <BarChart3 size={24} />
           </div>
-          <p className="text-sm font-semibold text-slate-600">
+          <p className="text-sm font-bold text-slate-700">
             No hay datos suficientes para mostrar esta métrica
           </p>
-          <p className="text-xs text-slate-400 mt-1">
+          <p className="text-xs text-slate-500 mt-1">
             Los registros asociados se actualizarán automáticamente al ingresar nuevos datos.
           </p>
         </div>
@@ -75,8 +75,8 @@ export default function GraficoBarrasGenerico({
   return (
     <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm flex flex-col justify-between h-full">
       <div className="mb-4">
-        <h3 className="text-base font-bold text-[#0D274C] mb-1">{titulo}</h3>
-        {descripcion && <p className="text-xs text-slate-500">{descripcion}</p>}
+        <h3 className="text-base sm:text-lg font-black text-[#0D274C] mb-1">{titulo}</h3>
+        {descripcion && <p className="text-xs text-slate-700 font-medium">{descripcion}</p>}
       </div>
 
       <div className="w-full" style={{ height: altura }}>
@@ -87,18 +87,22 @@ export default function GraficoBarrasGenerico({
               layout="vertical"
               margin={{ top: 10, right: 30, left: 40, bottom: 10 }}
             >
-              <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#f1f5f9" />
-              <XAxis type="number" tickFormatter={formatearEjeY} stroke="#94a3b8" fontSize={11} />
+              <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#e2e8f0" />
+              <XAxis type="number" tickFormatter={formatearEjeY} stroke="#334155" fontSize={12} fontWeight={600} />
               <YAxis 
                 type="category" 
                 dataKey="etiqueta" 
-                stroke="#64748b" 
-                fontSize={11} 
-                width={120}
+                stroke="#0D274C" 
+                fontSize={12} 
+                fontWeight={600}
+                width={130}
                 tickLine={false}
               />
               <Tooltip content={customTooltip} />
-              <Legend wrapperStyle={{ fontSize: '12px', paddingTop: '10px' }} />
+              <Legend 
+                wrapperStyle={{ fontSize: '13px', paddingTop: '10px' }} 
+                formatter={(value) => <span className="text-slate-800 font-bold text-xs">{value}</span>}
+              />
               <Bar 
                 dataKey="valor" 
                 name="Total Registrado" 
@@ -111,11 +115,12 @@ export default function GraficoBarrasGenerico({
               data={datos}
               margin={{ top: 10, right: 20, left: 0, bottom: 25 }}
             >
-              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
               <XAxis 
                 dataKey="etiqueta" 
-                stroke="#64748b" 
-                fontSize={11} 
+                stroke="#0D274C" 
+                fontSize={12} 
+                fontWeight={600}
                 tickLine={false}
                 interval={0}
                 angle={-20}
@@ -123,12 +128,16 @@ export default function GraficoBarrasGenerico({
               />
               <YAxis 
                 tickFormatter={formatearEjeY} 
-                stroke="#94a3b8" 
-                fontSize={11} 
+                stroke="#334155" 
+                fontSize={12} 
+                fontWeight={600}
                 tickLine={false}
               />
               <Tooltip content={customTooltip} />
-              <Legend wrapperStyle={{ fontSize: '12px', paddingTop: '10px' }} />
+              <Legend 
+                wrapperStyle={{ fontSize: '13px', paddingTop: '10px' }} 
+                formatter={(value) => <span className="text-slate-800 font-bold text-xs">{value}</span>}
+              />
               <Bar 
                 dataKey="valor" 
                 name="Total Registrado" 
@@ -142,4 +151,3 @@ export default function GraficoBarrasGenerico({
     </div>
   );
 }
-

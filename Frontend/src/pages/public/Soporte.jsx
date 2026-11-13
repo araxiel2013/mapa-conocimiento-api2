@@ -192,13 +192,13 @@ export default function Soporte() {
             Nuestro equipo de soporte técnico y la Vicerrectoría de Investigaciones están a tu disposición para orientarte en el registro y homologación de tus datos.
           </p>
           <div className="pt-2">
-            <Link
-              to="/contacto"
-              className="inline-flex items-center gap-2 bg-[#Eb8600] hover:bg-[#d47800] text-white px-8 py-3.5 rounded-xl font-bold text-sm shadow-md transition-all"
+            <a
+              href="mailto:investigaciones@usb.edu.co?subject=Consulta%20Plataforma%20Mapa%20de%20Conocimiento%20USB"
+              className="inline-flex items-center gap-2 bg-[#Eb8600] hover:bg-[#d47800] text-white px-8 py-3.5 rounded-xl font-bold text-sm shadow-md transition-all cursor-pointer"
             >
               <Mail size={18} />
-              <span>Enviar Solicitud a Mesa de Ayuda</span>
-            </Link>
+              <span>Contactar por Correo: investigaciones@usb.edu.co</span>
+            </a>
           </div>
         </div>
 
